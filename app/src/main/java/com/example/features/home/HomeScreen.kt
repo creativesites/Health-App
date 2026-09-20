@@ -30,6 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import com.example.core.design.*
 import com.example.core.model.AppointmentStatus
 import com.example.core.model.ConsultationType
@@ -678,11 +681,10 @@ fun HomeScreen(
                                 .testTag("btn_join_consultation")
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Videocam,
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_util_video_consultation),
                                     contentDescription = null,
-                                    tint = CalmDarkMatte,
-                                    modifier = Modifier.size(19.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
@@ -1170,18 +1172,18 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 val specialtyShortcuts = listOf(
-                    Triple(SpecialtyCategory.MENTAL_HEALTH, "Psychology & Therapy", Icons.Outlined.Psychology),
-                    Triple(SpecialtyCategory.GENERAL_PRACTICE, "General Practice", Icons.Outlined.MedicalServices),
-                    Triple(SpecialtyCategory.NUTRITION, "Diet & Nutrition", Icons.Outlined.Spa),
-                    Triple(SpecialtyCategory.DENTAL, "Oral Health", Icons.Outlined.HealthAndSafety),
-                    Triple(SpecialtyCategory.PHYSIOTHERAPY, "Physiotherapy", Icons.Outlined.FitnessCenter)
+                    Pair(SpecialtyCategory.MENTAL_HEALTH, "Psychology & Therapy"),
+                    Pair(SpecialtyCategory.GENERAL_PRACTICE, "General Practice"),
+                    Pair(SpecialtyCategory.NUTRITION, "Diet & Nutrition"),
+                    Pair(SpecialtyCategory.DENTAL, "Oral Health"),
+                    Pair(SpecialtyCategory.PHYSIOTHERAPY, "Physiotherapy")
                 )
 
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(specialtyShortcuts) { (specialty, label, icon) ->
+                    items(specialtyShortcuts) { (specialty, label) ->
                         Surface(
                             onClick = { onNavigateToDiscover(specialty) },
                             shape = CalmLightShapes.Pill,
@@ -1194,13 +1196,12 @@ fun HomeScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(horizontal = 14.dp)
                             ) {
-                                Icon(
-                                    imageVector = icon,
+                                Image(
+                                    painter = painterResource(id = specialty.getIconRes()),
                                     contentDescription = null,
-                                    tint = CalmSphereBlue,
-                                    modifier = Modifier.size(17.dp)
+                                    modifier = Modifier.size(18.dp)
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = label,
                                     style = MaterialTheme.typography.labelMedium.copy(

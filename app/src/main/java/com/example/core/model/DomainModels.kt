@@ -17,7 +17,19 @@ enum class SpecialtyCategory(val displayName: String, val iconName: String) {
     PSYCHIATRY("Psychiatry", "health_and_safety"),
     OCCUPATIONAL_THERAPY("Occupational Therapy", "accessibility"),
     SPEECH_THERAPY("Speech Therapy", "record_voice_over"),
-    OTHER("Specialist Care", "local_hospital")
+    OTHER("Specialist Care", "local_hospital");
+
+    fun getIconRes(): Int = when (this) {
+        MENTAL_HEALTH -> com.example.R.drawable.ic_spec_mental_health
+        GENERAL_PRACTICE -> com.example.R.drawable.ic_spec_general_medicine
+        DENTAL -> com.example.R.drawable.ic_spec_dental
+        NUTRITION -> com.example.R.drawable.ic_spec_nutrition
+        PHYSIOTHERAPY -> com.example.R.drawable.ic_spec_physiotherapy
+        PSYCHIATRY -> com.example.R.drawable.ic_spec_mental_health
+        OCCUPATIONAL_THERAPY -> com.example.R.drawable.ic_spec_physiotherapy
+        SPEECH_THERAPY -> com.example.R.drawable.ic_spec_pediatrics
+        OTHER -> com.example.R.drawable.ic_spec_general_medicine
+    }
 }
 
 enum class ConsultationType(val label: String) {

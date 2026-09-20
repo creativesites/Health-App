@@ -289,7 +289,13 @@ fun DiscoveryScreen(
                             shadowElevation = if (isSelected) 3.dp else 1.dp,
                             modifier = Modifier.height(36.dp)
                         ) {
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 14.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp)) {
+                                Image(
+                                    painter = painterResource(id = specialty.getIconRes()),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = specialty.displayName,
                                     style = MaterialTheme.typography.labelMedium.copy(
@@ -300,7 +306,6 @@ fun DiscoveryScreen(
                                     )
                                 )
                             }
-                        }
                     }
                 }
 

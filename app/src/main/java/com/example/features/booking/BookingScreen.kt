@@ -23,6 +23,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.healthcare.R
 import com.example.core.design.*
 import com.example.core.model.ConsultationType
 import com.example.core.model.Practitioner
@@ -127,6 +132,28 @@ fun BookingScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
+                // Hero Consultation Illustration Card
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = CalmWhite,
+                    border = BorderStroke(1.dp, CalmHairline),
+                    shadowElevation = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(130.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ill_book_consultation),
+                        contentDescription = "Book Healthcare Consultation",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(20.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
                 // Section 1: Choose Doctor / Healthcare Professional
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

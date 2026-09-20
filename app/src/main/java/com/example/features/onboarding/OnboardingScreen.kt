@@ -19,6 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import com.example.core.design.*
 import com.example.ui.theme.*
 
@@ -72,9 +78,26 @@ fun OnboardingScreen(
 
                     when (step) {
                         1 -> {
-                            TheSphere(size = 80.dp, isBreathing = true)
+                            Surface(
+                                shape = RoundedCornerShape(24.dp),
+                                color = CalmWhite,
+                                border = BorderStroke(1.dp, CalmHairline),
+                                shadowElevation = 2.dp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(180.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ill_mental_wellbeing),
+                                    contentDescription = "Mental Wellbeing Sanctuary",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(24.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
 
-                            Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
 
                             Text(
                                 text = "Welcome to Calm Light",
@@ -99,17 +122,16 @@ fun OnboardingScreen(
                                 textAlign = TextAlign.Center
                             )
 
-                            Spacer(modifier = Modifier.height(28.dp))
+                            Spacer(modifier = Modifier.height(24.dp))
 
                             CalmCard(shape = CalmLightShapes.Prominent) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.VerifiedUser,
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_util_verified_specialist),
                                         contentDescription = null,
-                                        tint = CalmSphereBlue,
-                                        modifier = Modifier.size(20.dp)
+                                        modifier = Modifier.size(26.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Spacer(modifier = Modifier.width(12.dp))
                                     Column {
                                         Text(
                                             text = "Verified Zambian Practitioners",
@@ -134,13 +156,12 @@ fun OnboardingScreen(
                                 Spacer(modifier = Modifier.height(14.dp))
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.PhoneAndroid,
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_util_mobile_money),
                                         contentDescription = null,
-                                        tint = CalmEmerald,
-                                        modifier = Modifier.size(20.dp)
+                                        modifier = Modifier.size(26.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Spacer(modifier = Modifier.width(12.dp))
                                     Column {
                                         Text(
                                             text = "Mobile Money First",
@@ -163,6 +184,27 @@ fun OnboardingScreen(
                         }
 
                         2 -> {
+                            Surface(
+                                shape = RoundedCornerShape(20.dp),
+                                color = CalmWhite,
+                                border = BorderStroke(1.dp, CalmHairline),
+                                shadowElevation = 1.dp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(150.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ill_find_specialist),
+                                    contentDescription = "Find Specialist",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(20.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(18.dp))
+
                             Text(
                                 text = "Where are you based?",
                                 style = MaterialTheme.typography.headlineMedium.copy(
@@ -185,7 +227,7 @@ fun OnboardingScreen(
                                 textAlign = TextAlign.Center
                             )
 
-                            Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
 
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                                 zambianCities.forEach { city ->
@@ -207,10 +249,9 @@ fun OnboardingScreen(
                                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
                                         ) {
                                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Icon(
-                                                    imageVector = Icons.Outlined.Place,
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.ic_util_location),
                                                     contentDescription = null,
-                                                    tint = if (isSelected) CalmSphereBlue else CalmSlate,
                                                     modifier = Modifier.size(18.dp)
                                                 )
                                                 Spacer(modifier = Modifier.width(12.dp))
@@ -238,6 +279,27 @@ fun OnboardingScreen(
                         }
 
                         3 -> {
+                            Surface(
+                                shape = RoundedCornerShape(20.dp),
+                                color = CalmWhite,
+                                border = BorderStroke(1.dp, CalmHairline),
+                                shadowElevation = 1.dp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(150.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ill_privacy),
+                                    contentDescription = "Privacy & Confidentiality",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(20.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(18.dp))
+
                             Text(
                                 text = "Your Profile & Consent",
                                 style = MaterialTheme.typography.headlineMedium.copy(
@@ -322,14 +384,22 @@ fun OnboardingScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Column {
-                                        Text(
-                                            text = "Healthcare Privacy Consent",
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontFamily = InterFontFamily,
-                                                fontWeight = FontWeight.SemiBold
-                                            ),
-                                            color = CalmInkNavy
-                                        )
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.ic_util_privacy),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = "Healthcare Privacy Consent",
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontFamily = InterFontFamily,
+                                                    fontWeight = FontWeight.SemiBold
+                                                ),
+                                                color = CalmInkNavy
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
                                             text = "I consent to confidential encrypted handling of my consultation scheduling, medical intake notes, and treatment encounters in accordance with healthcare privacy standards.",

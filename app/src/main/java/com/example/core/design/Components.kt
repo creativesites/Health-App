@@ -32,6 +32,8 @@ import com.example.core.model.PaymentStatus
 import com.example.ui.theme.*
 import coil.compose.AsyncImage
 
+import com.example.R
+
 @Composable
 fun HealthcareTopBar(
     title: String,
@@ -61,13 +63,12 @@ fun VerifiedBadge(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            Icon(
-                imageVector = Icons.Filled.Verified,
+            Image(
+                painter = painterResource(id = R.drawable.ic_util_verified_specialist),
                 contentDescription = "HPCZ Verified",
-                tint = CalmEmerald,
-                modifier = Modifier.size(13.dp)
+                modifier = Modifier.size(14.dp)
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(5.dp))
             Text(
                 text = "HPCZ Verified",
                 style = MaterialTheme.typography.labelSmall.copy(
@@ -134,11 +135,10 @@ fun ConsultationTypeChip(type: ConsultationType, modifier: Modifier = Modifier) 
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
         ) {
-            Icon(
-                imageVector = if (isOnline) Icons.Outlined.Videocam else Icons.Outlined.Place,
+            Image(
+                painter = painterResource(id = if (isOnline) R.drawable.ic_util_video_consultation else R.drawable.ic_util_location),
                 contentDescription = null,
-                tint = if (isOnline) CalmSphereBlue else CalmSlate,
-                modifier = Modifier.size(13.dp)
+                modifier = Modifier.size(14.dp)
             )
             Spacer(modifier = Modifier.width(5.dp))
             Text(

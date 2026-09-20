@@ -20,6 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import com.example.core.design.*
 import com.example.core.model.PaymentProviderType
 import com.example.core.model.PaymentStatus
@@ -158,6 +164,28 @@ fun PaymentScreen(
                         }
                     }
                 } else {
+                    // Hero Mobile Money Illustration
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = CalmWhite,
+                        border = BorderStroke(1.dp, CalmHairline),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ill_mobile_money),
+                            contentDescription = "Zambia Mobile Money",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(20.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     // Consultation Fee Summary
                     CalmCard(shape = CalmLightShapes.Standard) {
                         Text(
@@ -239,11 +267,10 @@ fun PaymentScreen(
                                     modifier = Modifier.padding(16.dp)
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.PhoneIphone,
+                                        Image(
+                                            painter = painterResource(id = R.drawable.ic_util_mobile_money),
                                             contentDescription = null,
-                                            tint = if (isSelected) CalmSphereBlue else CalmSlate,
-                                            modifier = Modifier.size(20.dp)
+                                            modifier = Modifier.size(24.dp)
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Text(

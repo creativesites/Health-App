@@ -28,6 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import com.example.core.design.*
 import com.example.ui.theme.*
 
@@ -547,6 +551,28 @@ fun CareScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Care Continuity Sanctuary Banner
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = CalmWhite,
+                    border = BorderStroke(1.dp, CalmHairline),
+                    shadowElevation = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ill_care_continuity),
+                        contentDescription = "Care Continuity & Grounding",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(20.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Grounding Rhythm Breathwork Card
                 CalmCard(
                     shape = CalmLightShapes.Prominent,
@@ -815,25 +841,33 @@ fun CareScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column {
-                        Text(
-                            text = "Daily Care Plan Goals",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontFamily = OutfitFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 18.sp
-                            ),
-                            color = CalmInkNavy
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_util_care_plan),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
-                        Text(
-                            text = "$completedCount of $totalCount completed today",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontFamily = InterFontFamily,
-                                color = CalmEmerald,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 12.sp
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Daily Care Plan Goals",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontFamily = OutfitFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 18.sp
+                                ),
+                                color = CalmInkNavy
                             )
-                        )
+                            Text(
+                                text = "$completedCount of $totalCount completed today",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontFamily = InterFontFamily,
+                                    color = CalmEmerald,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp
+                                )
+                            )
+                        }
                     }
 
                     TextButton(

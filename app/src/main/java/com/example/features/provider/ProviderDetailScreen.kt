@@ -22,6 +22,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import com.example.core.design.*
 import com.example.core.model.ConsultationType
 import com.example.ui.theme.*
@@ -321,10 +324,9 @@ fun ProviderDetailScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.VerifiedUser,
+                                Image(
+                                    painter = androidx.compose.ui.res.painterResource(id = com.example.healthcare.R.drawable.ic_util_verified_specialist),
                                     contentDescription = null,
-                                    tint = CalmSphereBlue,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))

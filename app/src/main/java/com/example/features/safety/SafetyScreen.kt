@@ -20,6 +20,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import com.example.core.design.*
 import com.example.core.model.SafetyResource
 import com.example.core.repository.mock.AppRepositoryLocator
@@ -332,6 +335,46 @@ fun SafetyScreen(
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontFamily = InterFontFamily,
                                     color = CalmSlate
+                                )
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Healthcare Privacy Assurance Card
+                CalmCard(
+                    shape = CalmLightShapes.Prominent,
+                    backgroundColor = CalmWhite
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_util_privacy),
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.width(14.dp))
+                        Column {
+                            Text(
+                                text = "Confidential & Protected",
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontFamily = OutfitFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 15.sp
+                                ),
+                                color = CalmInkNavy
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Your safety contacts, health journals, and emergency check-ins are encrypted locally and handled with strict patient confidentiality.",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontFamily = InterFontFamily,
+                                    color = CalmSlate,
+                                    fontSize = 12.sp
                                 )
                             )
                         }
