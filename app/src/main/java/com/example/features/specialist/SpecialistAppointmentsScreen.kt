@@ -43,14 +43,18 @@ fun SpecialistAppointmentsScreen(
     onOpenAvailability: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val authRepo = AppRepositoryLocator.authRepository
     val appointmentRepo = AppRepositoryLocator.appointmentRepository
+    val session by authRepo.getActiveSession().collectAsState(initial = null)
+    val practitionerId = session?.practitionerId ?: "doc_chileshe_01"
+
     var appointments by remember { mutableStateOf<List<Appointment>>(emptyList()) }
     var selectedFilter by remember { mutableStateOf(SpecialistScheduleFilter.ALL) }
     var showConfirmDialogForId by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(practitionerId) {
         appointmentRepo.getAppointments().collectLatest { list ->
-            appointments = list.filter { it.practitionerId == "doc_chileshe_01" }
+            appointments = list.filter { it.practitionerId == practitionerId }
         }
     }
 

@@ -71,7 +71,17 @@ fun BookingScreen(
     }
 
     AuraBackground(aura = AuraType.Sessions) {
+        // Editorial background image with subtle calm translucency
+        Image(
+            painter = painterResource(id = R.drawable.bg_editorial_booking),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alpha = 0.08f,
+            modifier = Modifier.fillMaxSize()
+        )
+
         Scaffold(
+            containerColor = Color.Transparent,
             topBar = {
                 CalmTopBar(
                     title = "Find your time",
@@ -122,8 +132,7 @@ fun BookingScreen(
                         )
                     }
                 }
-            },
-            containerColor = Color.Transparent
+            }
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -454,6 +463,25 @@ fun BookingScreen(
                 val morningSlots = uiState.availableTimeSlots.filter { it.timeLabel.contains("AM") }
                 val afternoonSlots = uiState.availableTimeSlots.filter { it.timeLabel.contains("PM") }
 
+                if (morningSlots.isEmpty() && afternoonSlots.isEmpty()) {
+                    Surface(
+                        shape = CalmLightShapes.Standard,
+                        color = CalmWhite.copy(alpha = 0.85f),
+                        border = BorderStroke(1.dp, CalmHairline),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "No open slots remaining for this date. Please choose another day above.",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontFamily = InterFontFamily,
+                                color = CalmSlate,
+                                fontSize = 13.5.sp
+                            ),
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+
                 if (morningSlots.isNotEmpty()) {
                     Text(
                         text = "Morning",
@@ -463,21 +491,21 @@ fun BookingScreen(
                         ),
                         modifier = Modifier.padding(bottom = 6.dp)
                     )
-                    Row(
+                    LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        morningSlots.forEach { slot ->
+                        items(morningSlots) { slot ->
                             CalmTimeSlotPill(
                                 timeLabel = slot.timeLabel,
                                 isSelected = uiState.selectedTimeSlot?.id == slot.id,
                                 isAvailable = slot.isAvailable,
                                 onClick = { viewModel.onSelectTimeSlot(slot) },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.width(102.dp)
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
                 }
 
                 if (afternoonSlots.isNotEmpty()) {
@@ -489,17 +517,17 @@ fun BookingScreen(
                         ),
                         modifier = Modifier.padding(bottom = 6.dp)
                     )
-                    Row(
+                    LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        afternoonSlots.forEach { slot ->
+                        items(afternoonSlots) { slot ->
                             CalmTimeSlotPill(
                                 timeLabel = slot.timeLabel,
                                 isSelected = uiState.selectedTimeSlot?.id == slot.id,
                                 isAvailable = slot.isAvailable,
                                 onClick = { viewModel.onSelectTimeSlot(slot) },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.width(102.dp)
                             )
                         }
                     }

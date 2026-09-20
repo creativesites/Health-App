@@ -21,6 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import com.example.core.design.*
 import com.example.ui.theme.*
 
@@ -96,6 +100,15 @@ fun ConsultationScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            // Editorial backdrop texture for immersive clinical ambience
+            Image(
+                painter = painterResource(id = R.drawable.bg_editorial_consultation),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                alpha = 0.14f,
+                modifier = Modifier.fillMaxSize()
+            )
+
             // Main Consultation Viewport
             if (uiState.isAudioOnlyFallback || !uiState.isCameraOn) {
                 // Audio-First Calm Presence

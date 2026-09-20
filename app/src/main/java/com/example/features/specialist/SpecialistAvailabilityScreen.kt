@@ -35,12 +35,16 @@ fun SpecialistAvailabilityScreen(
     onNavigateBack: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val authRepo = AppRepositoryLocator.authRepository
     val availabilityRepo = AppRepositoryLocator.availabilityRepository
+    val session by authRepo.getActiveSession().collectAsState(initial = null)
+    val practitionerId = session?.practitionerId ?: "doc_chileshe_01"
+
     var availabilityDays by remember { mutableStateOf<List<SpecialistAvailabilityDay>>(emptyList()) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        availabilityRepo.getAvailability("doc_chileshe_01").collectLatest { list ->
+    LaunchedEffect(practitionerId) {
+        availabilityRepo.getAvailability(practitionerId).collectLatest { list ->
             availabilityDays = list
         }
     }
@@ -199,20 +203,20 @@ fun SpecialistAvailabilityScreen(
                         onToggleEnabled = { isEnabled ->
                             val updated = day.copy(isEnabled = isEnabled)
                             coroutineScope.launch {
-                                availabilityRepo.updateDayAvailability("doc_chileshe_01", updated)
+                                availabilityRepo.updateDayAvailability(practitionerId, updated)
                                 snackbarHostState.showSnackbar("${day.dayOfWeek} updated")
                             }
                         },
                         onToggleOnline = { allowsOnline ->
                             val updated = day.copy(allowsOnline = allowsOnline)
                             coroutineScope.launch {
-                                availabilityRepo.updateDayAvailability("doc_chileshe_01", updated)
+                                availabilityRepo.updateDayAvailability(practitionerId, updated)
                             }
                         },
                         onToggleInPerson = { allowsInPerson ->
                             val updated = day.copy(allowsInPerson = allowsInPerson)
                             coroutineScope.launch {
-                                availabilityRepo.updateDayAvailability("doc_chileshe_01", updated)
+                                availabilityRepo.updateDayAvailability(practitionerId, updated)
                             }
                         }
                     )

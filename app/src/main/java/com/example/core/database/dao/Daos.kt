@@ -5,6 +5,7 @@ import com.example.core.database.entity.CareGoalEntity
 import com.example.core.database.entity.JournalEntryEntity
 import com.example.core.database.entity.MoodCheckInEntity
 import com.example.core.database.entity.PatientEntity
+import com.example.core.database.entity.AppointmentEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -78,3 +79,34 @@ interface JournalEntryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entries: List<JournalEntryEntity>)
 }
+
+@Dao
+interface AppointmentDao {
+    @Query("SELECT * FROM appointments ORDER BY createdAtEpoch DESC")
+    fun getAllAppointments(): Flow<List<AppointmentEntity>>
+
+    @Query("SELECT * FROM appointments WHERE practitionerId = :practitionerId ORDER BY createdAtEpoch DESC")
+    fun getAppointmentsForPractitioner(practitionerId: String): Flow<List<AppointmentEntity>>
+
+    @Query("SELECT * FROM appointments WHERE patientId = :patientId ORDER BY createdAtEpoch DESC")
+    fun getAppointmentsForPatient(patientId: String): Flow<List<AppointmentEntity>>
+
+    @Query("SELECT * FROM appointments WHERE id = :id LIMIT 1")
+    suspend fun getAppointmentById(id: String): AppointmentEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(appointment: AppointmentEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(appointments: List<AppointmentEntity>)
+
+    @Query("UPDATE appointments SET status = :status, paymentStatus = :paymentStatus WHERE id = :id")
+    suspend fun updateStatusAndPayment(id: String, status: String, paymentStatus: String): Int
+
+    @Query("UPDATE appointments SET dateIso = :newDateIso, timeSlotLabel = :newTimeSlot, status = :status WHERE id = :id")
+    suspend fun rescheduleAppointment(id: String, newDateIso: String, newTimeSlot: String, status: String = "RESCHEDULED"): Int
+
+    @Query("DELETE FROM appointments WHERE id = :id")
+    suspend fun deleteById(id: String): Int
+}
+

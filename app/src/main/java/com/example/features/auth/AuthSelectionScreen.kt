@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -175,8 +176,8 @@ fun AuthSelectionScreen(
                     icon = Icons.Outlined.MedicalServices,
                     title = "Healthcare Specialist",
                     subtitle = "Manage clinical schedule, conduct live patient consultations, record HPCZ encounter notes, and coordinate care plans.",
-                    personaPreviewName = if (selectedSpecialistId == "doc_chileshe_01") "Dr. Mutale Chileshe" else "Dr. Mwansa Kapwepwe",
-                    personaPreviewSubtitle = if (selectedSpecialistId == "doc_chileshe_01") "Clinical Psychologist • HPCZ #7821-ZM" else "Consultant Psychiatrist • HPCZ #5490-ZM",
+                    personaPreviewName = if (selectedSpecialistId == "doc_chileshe_01") "Mutale Chileshe" else "Dr. Thandiwe Mwansa",
+                    personaPreviewSubtitle = if (selectedSpecialistId == "doc_chileshe_01") "Clinical Psychologist • Lusaka" else "Specialist Psychiatrist • Lusaka",
                     features = listOf(
                         "Clinical schedule & instant booking approval workflow",
                         "Active patient care roster with intake summaries",
@@ -202,18 +203,18 @@ fun AuthSelectionScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 SpecialistChip(
-                                    name = "Dr. Mutale C.",
+                                    name = "M. Chileshe",
                                     title = "Psychologist",
                                     isSelected = selectedSpecialistId == "doc_chileshe_01",
                                     modifier = Modifier.weight(1f),
                                     onClick = { selectedSpecialistId = "doc_chileshe_01" }
                                 )
                                 SpecialistChip(
-                                    name = "Dr. Mwansa K.",
+                                    name = "Dr. Mwansa",
                                     title = "Psychiatrist",
-                                    isSelected = selectedSpecialistId == "doc_kapwepwe_02",
+                                    isSelected = selectedSpecialistId == "doc_mwansa_02",
                                     modifier = Modifier.weight(1f),
-                                    onClick = { selectedSpecialistId = "doc_kapwepwe_02" }
+                                    onClick = { selectedSpecialistId = "doc_mwansa_02" }
                                 )
                             }
                         }
@@ -261,13 +262,16 @@ fun AuthSelectionScreen(
                                 style = MaterialTheme.typography.labelLarge.copy(
                                     fontFamily = InterFontFamily,
                                     fontWeight = FontWeight.SemiBold,
-                                    fontSize = 16.sp
-                                )
+                                    fontSize = 16.sp,
+                                    color = CalmWhite
+                                ),
+                                color = CalmWhite
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Icon(
-                                imageVector = if (selectedRole == UserRole.USER) Icons.Default.ArrowForward else Icons.Default.MedicalServices,
+                                imageVector = if (selectedRole == UserRole.USER) Icons.AutoMirrored.Filled.ArrowForward else Icons.Outlined.MedicalServices,
                                 contentDescription = null,
+                                tint = CalmWhite,
                                 modifier = Modifier.size(18.dp)
                             )
                         }

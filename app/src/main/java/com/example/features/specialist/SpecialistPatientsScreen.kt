@@ -32,13 +32,17 @@ import kotlinx.coroutines.flow.collectLatest
 fun SpecialistPatientsScreen(
     onOpenPatientChat: (patientId: String, patientName: String) -> Unit
 ) {
+    val authRepo = AppRepositoryLocator.authRepository
     val specialistRepo = AppRepositoryLocator.specialistRepository
+    val session by authRepo.getActiveSession().collectAsState(initial = null)
+    val practitionerId = session?.practitionerId ?: "doc_chileshe_01"
+
     var patients by remember { mutableStateOf<List<SpecialistPatientSummary>>(emptyList()) }
     var selectedPatient by remember { mutableStateOf<SpecialistPatientSummary?>(null) }
     var searchQuery by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        specialistRepo.getSpecialistPatients("doc_chileshe_01").collectLatest { list ->
+    LaunchedEffect(practitionerId) {
+        specialistRepo.getSpecialistPatients(practitionerId).collectLatest { list ->
             patients = list
         }
     }

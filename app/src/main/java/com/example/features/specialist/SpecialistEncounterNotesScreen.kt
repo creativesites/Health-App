@@ -36,9 +36,11 @@ fun SpecialistEncounterNotesScreen(
     onNavigateBack: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val authRepo = AppRepositoryLocator.authRepository
     val appointmentRepo = AppRepositoryLocator.appointmentRepository
     val encounterRepo = AppRepositoryLocator.encounterRepository
     val careRepo = AppRepositoryLocator.careRepository
+    val session by authRepo.getActiveSession().collectAsState(initial = null)
 
     var appointment by remember { mutableStateOf<Appointment?>(null) }
     var existingEncounter by remember { mutableStateOf<ClinicalEncounter?>(null) }
@@ -523,7 +525,7 @@ fun SpecialistEncounterNotesScreen(
                             val newEncounter = ClinicalEncounter(
                                 encounterId = existingEncounter?.encounterId ?: "enc_${UUID.randomUUID().toString().take(8)}",
                                 appointmentId = appointmentId,
-                                practitionerId = apt?.practitionerId ?: "doc_chileshe_01",
+                                practitionerId = apt?.practitionerId ?: (session?.practitionerId ?: "doc_chileshe_01"),
                                 patientId = apt?.patientId ?: "pat_demo_me",
                                 patientDisplayName = apt?.patientName ?: "Kondwani Tembo",
                                 dateIso = apt?.dateIso ?: "Today",

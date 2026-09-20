@@ -39,13 +39,16 @@ fun SpecialistProfileScreen(
     val authRepo = AppRepositoryLocator.authRepository
     val specialistRepo = AppRepositoryLocator.specialistRepository
 
+    val session by authRepo.getActiveSession().collectAsState(initial = null)
+    val practitionerId = session?.practitionerId ?: "doc_chileshe_01"
+
     var practitioner by remember { mutableStateOf<Practitioner?>(null) }
     var isEditingBio by remember { mutableStateOf(false) }
     var bioText by remember { mutableStateOf("") }
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        specialistRepo.getSpecialistProfile("doc_chileshe_01").collectLatest { p ->
+    LaunchedEffect(practitionerId) {
+        specialistRepo.getSpecialistProfile(practitionerId).collectLatest { p ->
             practitioner = p
             bioText = p?.bio ?: ""
         }

@@ -2,9 +2,7 @@ package com.example.core.repository.mock
 
 import com.example.core.model.*
 import com.example.core.repository.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import java.util.UUID
 
 /**
@@ -579,13 +577,40 @@ class MockPractitionerRepository : PractitionerRepository {
     }
 
     override suspend fun getAvailableTimeSlots(practitionerId: String, dateIso: String): List<TimeSlot> {
-        return listOf(
+        val existingAppointments = try {
+            AppRepositoryLocator.appointmentRepository.getAppointments()
+        } catch (_: Exception) {
+            null
+        }
+
+        val bookedLabels = mutableSetOf<String>()
+        // If appointment repository has loaded, find any active appointments on this date
+        try {
+            val apts: List<Appointment> = existingAppointments?.firstOrNull() ?: emptyList()
+            apts.filter { 
+                it.practitionerId == practitionerId && 
+                it.dateIso == dateIso && 
+                it.status != AppointmentStatus.CANCELLED 
+            }.forEach {
+                bookedLabels.add(it.timeSlotLabel)
+            }
+        } catch (_: Exception) {}
+
+        val baseSlots = listOf(
             TimeSlot(id = "slot_1", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "09:00 - 09:50", isAvailable = true),
             TimeSlot(id = "slot_2", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "10:30 - 11:20", isAvailable = true),
             TimeSlot(id = "slot_3", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "14:00 - 14:50", isAvailable = true),
             TimeSlot(id = "slot_4", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "15:30 - 16:20", isAvailable = true),
             TimeSlot(id = "slot_5", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "17:00 - 17:50", isAvailable = false)
         )
+
+        return baseSlots.map { slot ->
+            if (bookedLabels.contains(slot.timeLabel)) {
+                slot.copy(isAvailable = false)
+            } else {
+                slot
+            }
+        }
     }
 
     override fun searchPractitioners(
@@ -991,10 +1016,66 @@ class MockSpecialistRepository : SpecialistRepository {
         return false
     }
 
-    override fun getSpecialistPatients(practitionerId: String): Flow<List<SpecialistPatientSummary>> = patientsFlow
+    override fun getSpecialistPatients(practitionerId: String): Flow<List<SpecialistPatientSummary>> {
+        val apptFlow = try {
+            AppRepositoryLocator.appointmentRepository.getAppointments()
+        } catch (_: Exception) {
+            kotlinx.coroutines.flow.flowOf(emptyList())
+        }
+
+        return combine(patientsFlow, apptFlow) { seededList, apptList ->
+            val practitionerAppts = apptList.filter { it.practitionerId == practitionerId }
+            val dynamicPatients = practitionerAppts.map { apt ->
+                SpecialistPatientSummary(
+                    patientId = apt.patientId,
+                    displayName = apt.patientName,
+                    age = 30,
+                    gender = "Client",
+                    city = "Lusaka",
+                    totalSessions = 1,
+                    lastSessionDate = apt.dateIso,
+                    nextSessionDate = "${apt.dateIso}, ${apt.timeSlotLabel}",
+                    careStatus = if (apt.status == AppointmentStatus.CONFIRMED) "Active Care" else if (apt.status == AppointmentStatus.COMPLETED) "Completed" else "Initial Evaluation",
+                    outstandingFollowUp = apt.status == AppointmentStatus.CONFIRMED,
+                    contactNumberMasked = "+260 97 ••• 0000",
+                    intakeSummary = apt.intakeNotes?.ifBlank { "Initial consultation booked via platform" } ?: "Consultation booked via platform (${apt.consultationType.name})"
+                )
+            }
+
+            // Deduplicate by patientId, prioritizing latest dynamic appointment
+            val map = linkedMapOf<String, SpecialistPatientSummary>()
+            dynamicPatients.forEach { map[it.patientId] = it }
+            seededList.forEach { if (!map.containsKey(it.patientId)) map[it.patientId] = it }
+            map.values.toList()
+        }
+    }
 
     override suspend fun getPatientSummary(patientId: String): SpecialistPatientSummary? {
-        return patientsFlow.value.find { it.patientId == patientId }
+        val seeded = patientsFlow.value.find { it.patientId == patientId }
+        if (seeded != null) return seeded
+
+        return try {
+            val apts = AppRepositoryLocator.appointmentRepository.getAppointments().first()
+            val match = apts.find { it.patientId == patientId }
+            if (match != null) {
+                SpecialistPatientSummary(
+                    patientId = match.patientId,
+                    displayName = match.patientName,
+                    age = 30,
+                    gender = "Client",
+                    city = "Lusaka",
+                    totalSessions = 1,
+                    lastSessionDate = match.dateIso,
+                    nextSessionDate = "${match.dateIso}, ${match.timeSlotLabel}",
+                    careStatus = if (match.status == AppointmentStatus.CONFIRMED) "Active Care" else if (match.status == AppointmentStatus.COMPLETED) "Completed" else "Initial Evaluation",
+                    outstandingFollowUp = match.status == AppointmentStatus.CONFIRMED,
+                    contactNumberMasked = "+260 97 ••• 0000",
+                    intakeSummary = match.intakeNotes?.ifBlank { "Initial consultation booked via platform" } ?: "Consultation booked via platform (${match.consultationType.name})"
+                )
+            } else null
+        } catch (_: Exception) {
+            null
+        }
     }
 }
 
@@ -1061,6 +1142,7 @@ class MockEncounterRepository : EncounterRepository {
 object AppRepositoryLocator {
     private var customPatientRepo: PatientRepository? = null
     private var customCareRepo: CareRepository? = null
+    private var customAppointmentRepo: AppointmentRepository? = null
 
     fun initializeDatabase(database: com.example.core.database.AppDatabase) {
         customPatientRepo = com.example.core.database.RoomPatientRepository(database.patientDao())
@@ -1068,6 +1150,9 @@ object AppRepositoryLocator {
             database.careGoalDao(),
             database.moodCheckInDao(),
             database.journalEntryDao()
+        )
+        customAppointmentRepo = com.example.core.database.RoomAppointmentRepository(
+            database.appointmentDao()
         )
     }
 
@@ -1077,7 +1162,9 @@ object AppRepositoryLocator {
     val encounterRepository: EncounterRepository by lazy { MockEncounterRepository() }
 
     val practitionerRepository: PractitionerRepository by lazy { MockPractitionerRepository() }
-    val appointmentRepository: AppointmentRepository by lazy { MockAppointmentRepository() }
+    private val defaultAppointmentRepo by lazy { MockAppointmentRepository() }
+    val appointmentRepository: AppointmentRepository
+        get() = customAppointmentRepo ?: defaultAppointmentRepo
     val paymentRepository: PaymentRepository by lazy { MockPaymentRepository() }
     private val defaultCareRepo by lazy { MockCareRepository() }
     val careRepository: CareRepository

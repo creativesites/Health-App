@@ -153,3 +153,77 @@ class RoomCareRepository(
         return checkIn.toDomain()
     }
 }
+
+class RoomAppointmentRepository(
+    private val appointmentDao: com.example.core.database.dao.AppointmentDao
+) : com.example.core.repository.AppointmentRepository {
+
+    override fun getAppointments(): Flow<List<Appointment>> {
+        return appointmentDao.getAllAppointments().map { list ->
+            list.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun getAppointmentById(id: String): Appointment? {
+        return appointmentDao.getAppointmentById(id)?.toDomain()
+    }
+
+    override suspend fun bookAppointment(
+        practitioner: Practitioner,
+        service: HealthcareService,
+        dateIso: String,
+        timeSlotLabel: String,
+        consultationType: ConsultationType,
+        intakeNotes: String?
+    ): Appointment {
+        val newAppointment = Appointment(
+            id = "apt_${UUID.randomUUID().toString().take(8)}",
+            patientId = "pat_demo_me",
+            patientName = "Kondwani Tembo",
+            patientPhone = "+260 97 5543210",
+            practitionerId = practitioner.id,
+            practitionerName = practitioner.fullName,
+            practitionerTitle = practitioner.title,
+            specialty = practitioner.primarySpecialty,
+            serviceId = service.id,
+            serviceName = service.name,
+            dateIso = dateIso,
+            timeSlotLabel = timeSlotLabel,
+            consultationType = consultationType,
+            locationDescription = if (consultationType == ConsultationType.ONLINE)
+                "Encrypted Virtual Room"
+            else
+                (practitioner.practice?.location?.physicalAddress ?: "${practitioner.location.area}, ${practitioner.location.city}"),
+            priceZmw = service.priceZmw,
+            status = AppointmentStatus.PENDING_PAYMENT,
+            paymentStatus = PaymentStatus.PENDING,
+            intakeNotes = intakeNotes,
+            meetingRoomId = if (consultationType == ConsultationType.ONLINE) "room_${UUID.randomUUID().toString().take(6)}" else null,
+            createdAtEpoch = System.currentTimeMillis()
+        )
+
+        appointmentDao.insertOrUpdate(com.example.core.database.entity.AppointmentEntity.fromDomain(newAppointment))
+        return newAppointment
+    }
+
+    override suspend fun updateAppointmentStatus(appointmentId: String, newStatus: AppointmentStatus): Boolean {
+        val existing = appointmentDao.getAppointmentById(appointmentId) ?: return false
+        val newPayStatus = if (newStatus == AppointmentStatus.CONFIRMED) PaymentStatus.PAID.name else existing.paymentStatus
+        val rows = appointmentDao.updateStatusAndPayment(appointmentId, newStatus.name, newPayStatus)
+        return rows > 0
+    }
+
+    override suspend fun cancelAppointment(appointmentId: String, reason: String?): Boolean {
+        return updateAppointmentStatus(appointmentId, AppointmentStatus.CANCELLED)
+    }
+
+    override suspend fun rescheduleAppointment(
+        appointmentId: String,
+        newDateIso: String,
+        newTimeSlot: String
+    ): Boolean {
+        val rows = appointmentDao.rescheduleAppointment(appointmentId, newDateIso, newTimeSlot, AppointmentStatus.RESCHEDULED.name)
+        return rows > 0
+    }
+}
+

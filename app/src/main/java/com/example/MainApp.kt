@@ -101,7 +101,8 @@ fun HealthcareApp() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .navigationBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 4.dp, bottom = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Surface(

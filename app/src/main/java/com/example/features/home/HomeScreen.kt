@@ -127,7 +127,7 @@ fun HomeScreen(
     ) {
         Scaffold(
             topBar = {
-                // Header with floating circular and pill controls inspired by the attached design
+                // Header with floating circular action controls
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -136,35 +136,7 @@ fun HomeScreen(
                         .statusBarsPadding()
                         .padding(horizontal = 20.dp, vertical = 10.dp)
                 ) {
-                    // Left: Connection & Location Pill Chip
-                    Surface(
-                        shape = CalmLightShapes.Pill,
-                        color = CalmWhite.copy(alpha = 0.92f),
-                        border = BorderStroke(1.dp, CalmHairline),
-                        shadowElevation = 1.dp
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(CircleShape)
-                                    .background(CalmEmerald)
-                            )
-                            Spacer(modifier = Modifier.width(7.dp))
-                            Text(
-                                text = "Lusaka, Zambia",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontFamily = InterFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    color = CalmInkNavy,
-                                    fontSize = 12.5.sp
-                                )
-                            )
-                        }
-                    }
+                    Spacer(modifier = Modifier.weight(1f))
 
                     // Right: Floating Circular Action Buttons
                     Row(

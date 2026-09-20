@@ -40,6 +40,7 @@ import com.example.core.model.Practitioner
 import com.example.core.model.SpecialtyCategory
 import com.example.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoveryScreen(
     viewModel: DiscoveryViewModel,
@@ -47,9 +48,261 @@ fun DiscoveryScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showFilterSheet by remember { mutableStateOf(false) }
 
     val cities = listOf("Lusaka", "Kitwe", "Ndola", "Livingstone", "Kabwe")
     val specialties = SpecialtyCategory.values()
+
+    val hasActiveFilters = uiState.selectedSpecialty != null ||
+            uiState.selectedCity != null ||
+            uiState.selectedConsultationType != null ||
+            uiState.searchQuery.isNotEmpty()
+
+    if (showFilterSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showFilterSheet = false },
+            containerColor = CalmWhite,
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+            dragHandle = {
+                Surface(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    color = CalmHairline,
+                    shape = CircleShape
+                ) {
+                    Box(modifier = Modifier.size(width = 36.dp, height = 4.dp))
+                }
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 36.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Refine Specialists",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontFamily = OutfitFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            color = CalmInkNavy,
+                            fontSize = 20.sp
+                        )
+                    )
+                    if (hasActiveFilters) {
+                        TextButton(
+                            onClick = {
+                                viewModel.clearFilters()
+                            }
+                        ) {
+                            Text("Reset All", color = CalmSlate, fontFamily = InterFontFamily, fontSize = 13.sp)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // Section 1: Consultation Type
+                Text(
+                    text = "Consultation Format",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontFamily = InterFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CalmInkNavy,
+                        fontSize = 13.sp
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val allTypes = listOf(
+                        null to "All Formats",
+                        ConsultationType.ONLINE to "Online Video",
+                        ConsultationType.IN_PERSON to "In-Person Clinic"
+                    )
+                    allTypes.forEach { (type, label) ->
+                        val isSelected = uiState.selectedConsultationType == type
+                        Surface(
+                            onClick = { viewModel.onConsultationTypeSelected(type) },
+                            shape = CalmLightShapes.Pill,
+                            color = if (isSelected) CalmDarkMatte else CalmMistSurface,
+                            border = BorderStroke(1.dp, if (isSelected) CalmDarkMatte else CalmHairline),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 14.dp)) {
+                                Text(
+                                    text = label,
+                                    color = if (isSelected) CalmWhite else CalmInkNavy,
+                                    fontSize = 12.sp,
+                                    fontFamily = InterFontFamily,
+                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // Section 2: Location
+                Text(
+                    text = "Location in Zambia",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontFamily = InterFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CalmInkNavy,
+                        fontSize = 13.sp
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    item {
+                        val isAllCities = uiState.selectedCity == null
+                        Surface(
+                            onClick = { viewModel.onCitySelected(null) },
+                            shape = CalmLightShapes.Pill,
+                            color = if (isAllCities) CalmDarkMatte else CalmMistSurface,
+                            border = BorderStroke(1.dp, if (isAllCities) CalmDarkMatte else CalmHairline),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 14.dp)) {
+                                Text(
+                                    text = "All Cities",
+                                    color = if (isAllCities) CalmWhite else CalmInkNavy,
+                                    fontSize = 12.sp,
+                                    fontFamily = InterFontFamily,
+                                    fontWeight = if (isAllCities) FontWeight.SemiBold else FontWeight.Normal
+                                )
+                            }
+                        }
+                    }
+                    items(cities) { city ->
+                        val isSelected = uiState.selectedCity == city
+                        Surface(
+                            onClick = { viewModel.onCitySelected(city) },
+                            shape = CalmLightShapes.Pill,
+                            color = if (isSelected) CalmDarkMatte else CalmMistSurface,
+                            border = BorderStroke(1.dp, if (isSelected) CalmDarkMatte else CalmHairline),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 14.dp)) {
+                                Text(
+                                    text = city,
+                                    color = if (isSelected) CalmWhite else CalmInkNavy,
+                                    fontSize = 12.sp,
+                                    fontFamily = InterFontFamily,
+                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // Section 3: Specialty
+                Text(
+                    text = "Specialty Focus",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontFamily = InterFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CalmInkNavy,
+                        fontSize = 13.sp
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    item {
+                        val isAllSpecialties = uiState.selectedSpecialty == null
+                        Surface(
+                            onClick = { viewModel.onSpecialtySelected(null) },
+                            shape = CalmLightShapes.Pill,
+                            color = if (isAllSpecialties) CalmDarkMatte else CalmMistSurface,
+                            border = BorderStroke(1.dp, if (isAllSpecialties) CalmDarkMatte else CalmHairline),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 14.dp)) {
+                                Text(
+                                    text = "All Specialties",
+                                    color = if (isAllSpecialties) CalmWhite else CalmInkNavy,
+                                    fontSize = 12.sp,
+                                    fontFamily = InterFontFamily,
+                                    fontWeight = if (isAllSpecialties) FontWeight.SemiBold else FontWeight.Normal
+                                )
+                            }
+                        }
+                    }
+                    items(specialties) { specialty ->
+                        val isSelected = uiState.selectedSpecialty == specialty
+                        Surface(
+                            onClick = { viewModel.onSpecialtySelected(specialty) },
+                            shape = CalmLightShapes.Pill,
+                            color = if (isSelected) CalmDarkMatte else CalmMistSurface,
+                            border = BorderStroke(1.dp, if (isSelected) CalmDarkMatte else CalmHairline),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 12.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = specialty.getIconRes()),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = specialty.displayName,
+                                    color = if (isSelected) CalmWhite else CalmInkNavy,
+                                    fontSize = 12.sp,
+                                    fontFamily = InterFontFamily,
+                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                // Apply Button
+                Button(
+                    onClick = { showFilterSheet = false },
+                    shape = CalmLightShapes.Pill,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CalmEmerald,
+                        contentColor = CalmWhite
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                ) {
+                    Text(
+                        text = "Show ${uiState.practitioners.size} Specialists",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontFamily = InterFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 15.sp,
+                            color = CalmWhite
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     // Screen wrapped in performant AuraBackground using Discovery palette with gentle golden warmth
     AuraBackground(
@@ -117,14 +370,9 @@ fun DiscoveryScreen(
                         }
                     }
 
-                    // Right: Reset button or Filter indicator
-                    val hasActiveFilters = uiState.selectedSpecialty != null ||
-                            uiState.selectedCity != null ||
-                            uiState.selectedConsultationType != null ||
-                            uiState.searchQuery.isNotEmpty()
-
+                    // Right: Filter Button (opens bottom sheet with active indicator)
                     Surface(
-                        onClick = { if (hasActiveFilters) viewModel.clearFilters() },
+                        onClick = { showFilterSheet = true },
                         shape = CircleShape,
                         color = if (hasActiveFilters) CalmHoneyGoldSoft else CalmWhite.copy(alpha = 0.94f),
                         border = BorderStroke(1.dp, if (hasActiveFilters) CalmHoneyGold.copy(alpha = 0.5f) else CalmHairline),
@@ -132,19 +380,20 @@ fun DiscoveryScreen(
                         modifier = Modifier.size(42.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Outlined.Tune,
+                                contentDescription = "Filters",
+                                tint = if (hasActiveFilters) CalmInkNavy else CalmSlate,
+                                modifier = Modifier.size(19.dp)
+                            )
                             if (hasActiveFilters) {
-                                Icon(
-                                    imageVector = Icons.Outlined.FilterAltOff,
-                                    contentDescription = "Reset Filters",
-                                    tint = CalmInkNavy,
-                                    modifier = Modifier.size(19.dp)
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Outlined.Tune,
-                                    contentDescription = "Filters",
-                                    tint = CalmSlate,
-                                    modifier = Modifier.size(19.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(7.dp)
+                                        .size(7.dp)
+                                        .clip(CircleShape)
+                                        .background(CalmEmerald)
                                 )
                             }
                         }
@@ -511,9 +760,19 @@ fun SpecialistCard(
                 Box(
                     modifier = Modifier
                         .size(76.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(CalmMistSurface)
-                        .border(1.5.dp, CalmHairline, RoundedCornerShape(18.dp))
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(CalmDiscoveryAura.copy(alpha = 0.5f), CalmMistSurface)
+                            )
+                        )
+                        .border(
+                            1.5.dp,
+                            Brush.linearGradient(
+                                listOf(CalmHairline, CalmDiscoveryAura)
+                            ),
+                            RoundedCornerShape(20.dp)
+                        )
                 ) {
                     if (practitioner.imageResId != null) {
                         Image(
@@ -537,10 +796,10 @@ fun SpecialistCard(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(4.dp)
-                                .size(12.dp)
+                                .size(13.dp)
                                 .clip(CircleShape)
                                 .background(CalmEmerald)
-                                .border(1.5.dp, CalmWhite, CircleShape)
+                                .border(2.dp, CalmWhite, CircleShape)
                         )
                     }
                 }

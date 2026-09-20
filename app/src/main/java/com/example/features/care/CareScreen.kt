@@ -486,6 +486,15 @@ fun CareScreen(
         secondaryAura = AuraType.Discovery,
         intensity = 1.15f
     ) {
+        // Editorial background image with subtle translucency
+        Image(
+            painter = painterResource(id = R.drawable.bg_editorial_care_loop),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alpha = 0.08f,
+            modifier = Modifier.fillMaxSize()
+        )
+
         Scaffold(
             topBar = {
                 CalmTopBar(

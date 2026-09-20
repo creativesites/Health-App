@@ -40,9 +40,13 @@ fun SpecialistHomeScreen(
     onOpenMessages: (patientId: String, patientName: String) -> Unit,
     onSwitchRole: () -> Unit = {}
 ) {
+    val authRepo = AppRepositoryLocator.authRepository
     val practitionerRepo = AppRepositoryLocator.practitionerRepository
     val appointmentRepo = AppRepositoryLocator.appointmentRepository
     val specialistRepo = AppRepositoryLocator.specialistRepository
+
+    val session by authRepo.getActiveSession().collectAsState(initial = null)
+    val practitionerId = session?.practitionerId ?: "doc_chileshe_01"
 
     var practitioner by remember { mutableStateOf<Practitioner?>(null) }
     var appointments by remember { mutableStateOf<List<Appointment>>(emptyList()) }
@@ -100,20 +104,20 @@ fun SpecialistHomeScreen(
         )
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(practitionerId) {
         practitionerRepo.getPractitioners().collectLatest { list ->
-            practitioner = list.find { it.id == "doc_chileshe_01" } ?: list.firstOrNull()
+            practitioner = list.find { it.id == practitionerId } ?: list.firstOrNull()
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(practitionerId) {
         appointmentRepo.getAppointments().collectLatest { list ->
-            appointments = list.filter { it.practitionerId == "doc_chileshe_01" }
+            appointments = list.filter { it.practitionerId == practitionerId }
         }
     }
 
-    LaunchedEffect(Unit) {
-        specialistRepo.getSpecialistPatients("doc_chileshe_01").collectLatest { list ->
+    LaunchedEffect(practitionerId) {
+        specialistRepo.getSpecialistPatients(practitionerId).collectLatest { list ->
             patients = list
         }
     }

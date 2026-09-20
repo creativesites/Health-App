@@ -22,9 +22,10 @@ import kotlinx.coroutines.launch
         PatientEntity::class,
         CareGoalEntity::class,
         MoodCheckInEntity::class,
-        JournalEntryEntity::class
+        JournalEntryEntity::class,
+        com.example.core.database.entity.AppointmentEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -32,6 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun careGoalDao(): CareGoalDao
     abstract fun moodCheckInDao(): MoodCheckInDao
     abstract fun journalEntryDao(): JournalEntryDao
+    abstract fun appointmentDao(): com.example.core.database.dao.AppointmentDao
 
     private class DatabaseCallback : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -55,6 +57,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "healthcare_app.db"
                 )
+                    .fallbackToDestructiveMigration()
                     .addCallback(DatabaseCallback())
                     .build()
                 INSTANCE = instance
@@ -150,6 +153,12 @@ abstract class AppDatabase : RoomDatabase() {
                     timestamp = System.currentTimeMillis()
                 )
             )
+
+            // Prepopulate initial Appointments into shared Room persistence
+            val initialAppointments = com.example.core.repository.mock.MockDataContainer.initialAppointments.map {
+                com.example.core.database.entity.AppointmentEntity.fromDomain(it)
+            }
+            database.appointmentDao().insertAll(initialAppointments)
         }
     }
 }
