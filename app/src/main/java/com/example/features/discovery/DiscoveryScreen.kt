@@ -306,6 +306,7 @@ fun DiscoveryScreen(
                                     )
                                 )
                             }
+                        }
                     }
                 }
 

@@ -27,7 +27,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.example.healthcare.R
+import com.example.R
 import com.example.core.design.*
 import com.example.core.model.ConsultationType
 import com.example.core.model.Practitioner

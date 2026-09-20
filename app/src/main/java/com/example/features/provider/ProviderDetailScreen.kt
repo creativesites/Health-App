@@ -212,7 +212,7 @@ fun ProviderDetailScreen(
                     }
                 }
             },
-            containerColor = Color.Transparent
+            containerColor = Color.Transparent  
         ) { padding ->
             if (practitioner == null) {
                 CalmLoadingState(
@@ -325,7 +325,7 @@ fun ProviderDetailScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Image(
-                                    painter = androidx.compose.ui.res.painterResource(id = com.example.healthcare.R.drawable.ic_util_verified_specialist),
+                                    painter = androidx.compose.ui.res.painterResource(id = com.example.R.drawable.ic_util_verified_specialist),
                                     contentDescription = null,
                                     modifier = Modifier.size(16.dp)
                                 )
