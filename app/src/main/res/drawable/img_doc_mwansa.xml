@@ -1,0 +1,115 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Soft Lilac & Lavender Clinical Background (Psychiatry/Self-Care Aura) -->
+    <path android:pathData="M0,0h200v200h-200z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="200"
+                android:endY="200"
+                android:type="linear">
+                <item android:color="#FFF1EEFB" android:offset="0.0" />
+                <item android:color="#FFE3DCF8" android:offset="0.5" />
+                <item android:color="#FFCDC2F2" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Ambient Glow -->
+    <path
+        android:pathData="M100,100m-70,0a70,70 0,1 1,140 0a70,70 0,1 1,-140 0"
+        android:fillColor="#156C5CE7" />
+
+    <!-- Shoulders & Coat -->
+    <path
+        android:pathData="M30,200 C32,166 54,142 86,138 L100,154 L114,138 C146,142 168,166 170,200 Z"
+        android:fillColor="#FFFFFFFF" />
+    <!-- Coat Lapels -->
+    <path
+        android:pathData="M86,138 L100,158 L114,138 L106,188 L94,188 Z"
+        android:fillColor="#FFE8EAF0" />
+    <!-- Red Stethoscope (Matching reference 3) -->
+    <path
+        android:pathData="M78,138 C75,165 80,188 95,190"
+        android:strokeColor="#FFD63031"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M122,138 C125,160 120,180 108,187 L100,192"
+        android:strokeColor="#FFD63031"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round" />
+    <!-- Stethoscope Silver Disc -->
+    <path
+        android:pathData="M98,193m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"
+        android:fillColor="#FFB0BEC5" />
+
+    <!-- Neck -->
+    <path
+        android:pathData="M87,116 L113,116 L113,142 L87,142 Z"
+        android:fillColor="#FF5C3826" />
+
+    <!-- Face Oval -->
+    <path
+        android:pathData="M68,74 C68,48 82,36 100,36 C118,36 132,48 132,74 C132,104 118,122 100,122 C82,122 68,104 68,74 Z"
+        android:fillColor="#FF6B422B" />
+
+    <!-- Elegant Flowing Hair / Updo (Matching reference image 3) -->
+    <path
+        android:pathData="M65,70 C64,40 76,28 100,28 C124,28 136,40 135,70 C140,88 138,110 134,124 C132,128 126,105 125,92 C125,60 115,44 100,44 C85,44 75,60 75,92 C74,105 68,128 66,124 C62,110 60,88 65,70 Z"
+        android:fillColor="#FF181A1E" />
+
+    <!-- Ears -->
+    <path
+        android:pathData="M63,76 C63,70 68,70 68,77 C68,84 63,84 63,76 Z"
+        android:fillColor="#FF5C3826" />
+    <path
+        android:pathData="M137,76 C137,70 132,70 132,77 C132,84 137,84 137,76 Z"
+        android:fillColor="#FF5C3826" />
+
+    <!-- Eyes (Gentle, smiling) -->
+    <path
+        android:pathData="M78,74 C82,71 88,71 92,74"
+        android:strokeColor="#FF23262D"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M85,76 A2.5,2.5 0 1,0 87,76 A2.5,2.5 0 1,0 85,76"
+        android:fillColor="#FF181A1E" />
+    <path
+        android:pathData="M108,74 C112,71 118,71 122,74"
+        android:strokeColor="#FF23262D"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M113,76 A2.5,2.5 0 1,0 115,76 A2.5,2.5 0 1,0 113,76"
+        android:fillColor="#FF181A1E" />
+
+    <!-- Cheerful Radiant Smile -->
+    <path
+        android:pathData="M87,96 C93,107 107,107 113,96"
+        android:strokeColor="#FF3A1A10"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round" />
+    <!-- White Teeth -->
+    <path
+        android:pathData="M89,97 C94,103 106,103 111,97 Z"
+        android:fillColor="#FFFFFFFF" />
+
+    <!-- HPCZ Shield Seal -->
+    <path
+        android:pathData="M162,22 L178,22 C178,35 170,44 162,48 C154,44 146,35 146,22 Z"
+        android:fillColor="#FF2EA84F" />
+    <path
+        android:pathData="M157,32 L161,36 L168,28"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

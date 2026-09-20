@@ -1,0 +1,123 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Soft Warm Amber / Earthy Nutrition Background -->
+    <path android:pathData="M0,0h200v200h-200z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="200"
+                android:endY="200"
+                android:type="linear">
+                <item android:color="#FFFDF7ED" android:offset="0.0" />
+                <item android:color="#FFF9EDD6" android:offset="0.5" />
+                <item android:color="#FFF1D7B0" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Professional White Clinical Coat & Blue Inset (Matching reference 4) -->
+    <path
+        android:pathData="M28,200 C30,166 52,142 85,138 L100,154 L115,138 C148,142 170,166 172,200 Z"
+        android:fillColor="#FFFFFFFF" />
+    <path
+        android:pathData="M85,138 L100,158 L115,138 L108,185 L92,185 Z"
+        android:fillColor="#FFE2E8F0" />
+    <!-- Royal Blue Lanyard / Ribbon (Matching reference 4) -->
+    <path
+        android:pathData="M92,138 L100,155 L108,138"
+        android:strokeColor="#FF2563EB"
+        android:strokeWidth="3.2" />
+
+    <!-- Stethoscope Around Neck -->
+    <path
+        android:pathData="M78,140 C75,165 80,185 92,188"
+        android:strokeColor="#FF1E293B"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M122,140 C125,162 120,180 108,186"
+        android:strokeColor="#FF1E293B"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M100,188m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"
+        android:fillColor="#FF94A3B8" />
+
+    <!-- Neck -->
+    <path
+        android:pathData="M87,114 L113,114 L113,142 L87,142 Z"
+        android:fillColor="#FF5C3826" />
+
+    <!-- Face Oval -->
+    <path
+        android:pathData="M68,72 C68,46 82,34 100,34 C118,34 132,46 132,72 C132,102 118,122 100,122 C82,122 68,102 68,72 Z"
+        android:fillColor="#FF6B422B" />
+
+    <!-- High Bun / Elegantly Styled Natural Hair (Matching reference 4) -->
+    <path
+        android:pathData="M86,22 C86,14 114,14 114,22 C118,32 82,32 86,22 Z"
+        android:fillColor="#FF181A1E" />
+    <path
+        android:pathData="M84,28 C84,18 116,18 116,28 C116,36 84,36 84,28 Z"
+        android:fillColor="#FF23262D" />
+    <!-- Pink Hairband Accent (Matching reference 4) -->
+    <path
+        android:pathData="M86,30 L114,30"
+        android:strokeColor="#FFF472B6"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round" />
+    <!-- Main Hair Shape -->
+    <path
+        android:pathData="M65,66 C64,38 78,32 100,32 C122,32 136,38 135,66 C128,52 118,46 100,46 C82,46 72,52 65,66 Z"
+        android:fillColor="#FF181A1E" />
+
+    <!-- Ears -->
+    <path
+        android:pathData="M63,74 C63,68 68,68 68,75 C68,82 63,82 63,74 Z"
+        android:fillColor="#FF5C3826" />
+    <path
+        android:pathData="M137,74 C137,68 132,68 132,75 C132,82 137,82 137,74 Z"
+        android:fillColor="#FF5C3826" />
+
+    <!-- Poised, Attentive Eyes (Matching reference 4) -->
+    <path
+        android:pathData="M78,72 C82,69 88,69 92,72"
+        android:strokeColor="#FF181A1E"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M85,73 A2.5,2.5 0 1,0 87,73 A2.5,2.5 0 1,0 85,73"
+        android:fillColor="#FF181A1E" />
+    <path
+        android:pathData="M108,72 C112,69 118,69 122,72"
+        android:strokeColor="#FF181A1E"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M113,73 A2.5,2.5 0 1,0 115,73 A2.5,2.5 0 1,0 113,73"
+        android:fillColor="#FF181A1E" />
+
+    <!-- Focused, Caring Smile -->
+    <path
+        android:pathData="M88,96 C93,103 107,103 112,96"
+        android:strokeColor="#FF3A1A10"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round" />
+
+    <!-- Verification HPCZ Shield -->
+    <path
+        android:pathData="M162,22 L178,22 C178,35 170,44 162,48 C154,44 146,35 146,22 Z"
+        android:fillColor="#FF2EA84F" />
+    <path
+        android:pathData="M157,32 L161,36 L168,28"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

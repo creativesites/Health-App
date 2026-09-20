@@ -1,0 +1,134 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Soft Clinical Background Gradient (Mental Health / Discovery Warm Blue) -->
+    <path android:pathData="M0,0h200v200h-200z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="200"
+                android:endY="200"
+                android:type="linear">
+                <item android:color="#FFE8F1FD" android:offset="0.0" />
+                <item android:color="#FFD1E3FA" android:offset="0.55" />
+                <item android:color="#FFB9D4F7" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Ambient Glow Circle -->
+    <path
+        android:pathData="M100,100m-70,0a70,70 0,1 1,140 0a70,70 0,1 1,-140 0"
+        android:fillColor="#151F5FBF" />
+
+    <!-- Shoulders & Clinical White Coat -->
+    <path
+        android:pathData="M28,200 C30,165 52,142 85,138 L100,154 L115,138 C148,142 170,165 172,200 Z"
+        android:fillColor="#FFFFFFFF" />
+    <!-- Lab Coat Shadow & Collar Fold -->
+    <path
+        android:pathData="M85,138 L100,158 L115,138 L108,185 L92,185 Z"
+        android:fillColor="#FFE2E8F0" />
+    <!-- Blue Inner Scrub -->
+    <path
+        android:pathData="M92,145 L100,156 L108,145 L105,170 L95,170 Z"
+        android:fillColor="#FF1F5FBF" />
+
+    <!-- Stethoscope Tube & Earpieces -->
+    <path
+        android:pathData="M78,140 C75,165 82,184 94,188 C94,192 90,196 86,196"
+        android:strokeColor="#FF334155"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M122,140 C125,162 120,180 110,186"
+        android:strokeColor="#FF334155"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round" />
+    <!-- Stethoscope Chest Piece Bell -->
+    <path
+        android:pathData="M86,196m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"
+        android:fillColor="#FF94A3B8" />
+
+    <!-- Neck -->
+    <path
+        android:pathData="M86,116 L114,116 L114,142 L86,142 Z"
+        android:fillColor="#FF5C3826" />
+    <!-- Neck Shadow -->
+    <path
+        android:pathData="M86,126 C92,134 108,134 114,126 L114,136 C108,142 92,142 86,136 Z"
+        android:fillColor="#FF462817" />
+
+    <!-- Head / Face Oval -->
+    <path
+        android:pathData="M66,74 C66,48 81,36 100,36 C119,36 134,48 134,74 C134,104 118,122 100,122 C82,122 66,104 66,74 Z"
+        android:fillColor="#FF6B422B" />
+
+    <!-- Ears -->
+    <path
+        android:pathData="M61,74 C61,68 66,68 66,75 C66,82 61,82 61,74 Z"
+        android:fillColor="#FF5C3826" />
+    <path
+        android:pathData="M139,74 C139,68 134,68 134,75 C134,82 139,82 139,74 Z"
+        android:fillColor="#FF5C3826" />
+
+    <!-- Hair (Braided / Neat Crown) -->
+    <path
+        android:pathData="M64,68 C63,42 78,32 100,32 C122,32 137,42 136,68 C130,50 120,44 100,44 C80,44 70,50 64,68 Z"
+        android:fillColor="#FF181A1E" />
+    <path
+        android:pathData="M66,66 C67,46 80,38 100,38 C120,38 133,46 134,66 C129,54 119,48 100,48 C81,48 71,54 66,66 Z"
+        android:fillColor="#FF23262D" />
+
+    <!-- Modern Stylish Glasses Frame (Matching reference image 2) -->
+    <path
+        android:pathData="M73,68 C73,63 80,63 88,63 C94,63 95,68 95,74 C95,80 92,83 85,83 C76,83 73,78 73,68 Z"
+        android:strokeColor="#FF181A1E"
+        android:strokeWidth="2.4"
+        android:fillColor="#15FFFFFF" />
+    <path
+        android:pathData="M105,68 C105,63 112,63 120,63 C126,63 127,68 127,74 C127,80 124,83 117,83 C108,83 105,78 105,68 Z"
+        android:strokeColor="#FF181A1E"
+        android:strokeWidth="2.4"
+        android:fillColor="#15FFFFFF" />
+    <!-- Glasses Bridge -->
+    <path
+        android:pathData="M95,70 L105,70"
+        android:strokeColor="#FF181A1E"
+        android:strokeWidth="2.4" />
+
+    <!-- Eyes (Behind Glasses) -->
+    <path
+        android:pathData="M80,72 A3,3 0 1,0 86,72 A3,3 0 1,0 80,72"
+        android:fillColor="#FF181A1E" />
+    <path
+        android:pathData="M114,72 A3,3 0 1,0 120,72 A3,3 0 1,0 114,72"
+        android:fillColor="#FF181A1E" />
+
+    <!-- Warm Friendly Smile -->
+    <path
+        android:pathData="M87,95 C92,104 108,104 113,95"
+        android:strokeColor="#FF3A1A10"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round" />
+    <!-- Smile Teeth Highlight -->
+    <path
+        android:pathData="M90,96 C94,101 106,101 110,96 Z"
+        android:fillColor="#FFFFFFFF" />
+
+    <!-- Verification HPCZ Shield Seal in Corner -->
+    <path
+        android:pathData="M162,22 L178,22 C178,35 170,44 162,48 C154,44 146,35 146,22 Z"
+        android:fillColor="#FF2EA84F" />
+    <path
+        android:pathData="M157,32 L161,36 L168,28"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

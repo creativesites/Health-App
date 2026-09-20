@@ -1,0 +1,126 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Soft Green/Sage Healing Clinic Background (General Practice / Sessions Aura) -->
+    <path android:pathData="M0,0h200v200h-200z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="200"
+                android:endY="200"
+                android:type="linear">
+                <item android:color="#FFE8F7EE" android:offset="0.0" />
+                <item android:color="#FFD4F0DF" android:offset="0.5" />
+                <item android:color="#FFB8E2C9" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Ambient Circle -->
+    <path
+        android:pathData="M100,100m-70,0a70,70 0,1 1,140 0a70,70 0,1 1,-140 0"
+        android:fillColor="#152EA84F" />
+
+    <!-- Broad Shoulders & Doctor Lab Coat (Matching reference 6) -->
+    <path
+        android:pathData="M24,200 C28,160 52,136 84,134 L100,152 L116,134 C148,136 172,160 176,200 Z"
+        android:fillColor="#FFFFFFFF" />
+    <path
+        android:pathData="M84,134 L100,156 L116,134 L108,190 L92,190 Z"
+        android:fillColor="#FFE2E8F0" />
+    <!-- Crossed Arms Silhouette -->
+    <path
+        android:pathData="M48,175 C60,165 80,162 100,166 C120,162 140,165 152,175 L158,200 L42,200 Z"
+        android:fillColor="#FFF8FAFC" />
+
+    <!-- Stethoscope Around Neck -->
+    <path
+        android:pathData="M78,136 C74,158 80,178 94,182"
+        android:strokeColor="#FF1E293B"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M122,136 C126,158 120,178 106,182"
+        android:strokeColor="#FF1E293B"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M100,185m-5.5,0a5.5,5.5 0,1 1,11 0a5.5,5.5 0,1 1,-11 0"
+        android:fillColor="#FFCBD5E1" />
+
+    <!-- Neck -->
+    <path
+        android:pathData="M85,114 L115,114 L115,140 L85,140 Z"
+        android:fillColor="#FF4A2A18" />
+
+    <!-- Head / Clean Shaven / Glasses (Matching reference image 6 & 1) -->
+    <path
+        android:pathData="M66,72 C66,44 81,32 100,32 C119,32 134,44 134,72 C134,102 119,122 100,122 C81,122 66,102 66,72 Z"
+        android:fillColor="#FF5C341F" />
+
+    <!-- Ears -->
+    <path
+        android:pathData="M60,74 C60,67 66,67 66,75 C66,83 60,83 60,74 Z"
+        android:fillColor="#FF4A2A18" />
+    <path
+        android:pathData="M140,74 C140,67 134,67 134,75 C134,83 140,83 140,74 Z"
+        android:fillColor="#FF4A2A18" />
+
+    <!-- Thin Clean Rim Glasses (Matching reference 6) -->
+    <path
+        android:pathData="M74,68 C74,64 80,64 88,64 C94,64 95,68 95,73 C95,78 92,81 86,81 C78,81 74,77 74,68 Z"
+        android:strokeColor="#FF1E293B"
+        android:strokeWidth="2.2"
+        android:fillColor="#15FFFFFF" />
+    <path
+        android:pathData="M105,68 C105,64 112,64 120,64 C126,64 127,68 127,73 C127,78 124,81 118,81 C110,81 105,77 105,68 Z"
+        android:strokeColor="#FF1E293B"
+        android:strokeWidth="2.2"
+        android:fillColor="#15FFFFFF" />
+    <path
+        android:pathData="M95,70 L105,70"
+        android:strokeColor="#FF1E293B"
+        android:strokeWidth="2.2" />
+
+    <!-- Eyes -->
+    <path
+        android:pathData="M81,71 A2.5,2.5 0 1,0 87,71 A2.5,2.5 0 1,0 81,71"
+        android:fillColor="#FF0F172A" />
+    <path
+        android:pathData="M115,71 A2.5,2.5 0 1,0 121,71 A2.5,2.5 0 1,0 115,71"
+        android:fillColor="#FF0F172A" />
+
+    <!-- Beard / Goatee (Matching reference 6 & 1) -->
+    <path
+        android:pathData="M86,92 C93,90 107,90 114,92 C113,95 107,95 100,95 C93,95 87,95 86,92 Z"
+        android:fillColor="#FF1E293B" />
+    <path
+        android:pathData="M94,106 C96,112 104,112 106,106 C105,108 97,108 94,106 Z"
+        android:fillColor="#FF1E293B" />
+
+    <!-- Wide Warm Reassuring Smile -->
+    <path
+        android:pathData="M87,96 C93,105 107,105 113,96"
+        android:strokeColor="#FF2B1408"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M89,97 C94,103 106,103 111,97 Z"
+        android:fillColor="#FFFFFFFF" />
+
+    <!-- HPCZ Shield -->
+    <path
+        android:pathData="M162,22 L178,22 C178,35 170,44 162,48 C154,44 146,35 146,22 Z"
+        android:fillColor="#FF2EA84F" />
+    <path
+        android:pathData="M157,32 L161,36 L168,28"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

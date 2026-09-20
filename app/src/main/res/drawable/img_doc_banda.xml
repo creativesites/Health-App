@@ -1,0 +1,117 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Clean Teal/Cyan Athletic Background (Physiotherapy / Rehab) -->
+    <path android:pathData="M0,0h200v200h-200z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="200"
+                android:endY="200"
+                android:type="linear">
+                <item android:color="#FFE6F4F6" android:offset="0.0" />
+                <item android:color="#FFCCE9ED" android:offset="0.5" />
+                <item android:color="#FFA6D7DF" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Medical / Athletic Blue Scrubs (Matching reference 5) -->
+    <path
+        android:pathData="M26,200 C30,162 52,138 84,136 L100,160 L116,136 C148,138 170,162 174,200 Z"
+        android:fillColor="#FF779ECB" />
+    <!-- V-Neck Scrub Trim -->
+    <path
+        android:pathData="M84,136 L100,162 L116,136 L112,148 L100,165 L88,148 Z"
+        android:fillColor="#FF5C85B5" />
+
+    <!-- Bright Yellow Stethoscope Tube (Matching reference image 5) -->
+    <path
+        android:pathData="M78,136 C74,162 82,185 96,188 C96,192 90,196 86,196"
+        android:strokeColor="#FFF59E0B"
+        android:strokeWidth="3.6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M122,136 C126,160 120,180 110,186"
+        android:strokeColor="#FFF59E0B"
+        android:strokeWidth="3.6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M86,196m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"
+        android:fillColor="#FF94A3B8" />
+
+    <!-- Neck -->
+    <path
+        android:pathData="M86,114 L114,114 L114,142 L86,142 Z"
+        android:fillColor="#FF4A2A18" />
+
+    <!-- Head Oval & Friendly Open Smile (Matching reference 5) -->
+    <path
+        android:pathData="M66,70 C66,42 81,32 100,32 C119,32 134,42 134,70 C134,102 119,122 100,122 C81,122 66,102 66,70 Z"
+        android:fillColor="#FF5A351E" />
+
+    <!-- Short Trimmed Beard & Mustache -->
+    <path
+        android:pathData="M84,90 C92,88 108,88 116,90 C114,94 108,94 100,94 C92,94 86,94 84,90 Z"
+        android:fillColor="#FF181A1E" />
+    <path
+        android:pathData="M80,94 C82,112 92,120 100,120 C108,120 118,112 120,94 C116,110 108,116 100,116 C92,116 84,110 80,94 Z"
+        android:fillColor="#FF181A1E" />
+
+    <!-- Ears -->
+    <path
+        android:pathData="M61,72 C61,65 66,65 66,73 C66,81 61,81 61,72 Z"
+        android:fillColor="#FF4A2A18" />
+    <path
+        android:pathData="M139,72 C139,65 134,65 134,73 C134,81 139,81 139,72 Z"
+        android:fillColor="#FF4A2A18" />
+
+    <!-- Short Clean Buzz Cut Hair -->
+    <path
+        android:pathData="M65,65 C64,38 78,28 100,28 C122,28 136,38 135,65 C130,48 118,38 100,38 C82,38 70,48 65,65 Z"
+        android:fillColor="#FF181A1E" />
+
+    <!-- Bright Welcoming Eyes -->
+    <path
+        android:pathData="M78,68 C82,65 88,65 92,68"
+        android:strokeColor="#FF181A1E"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M85,71 A2.5,2.5 0 1,0 87,71 A2.5,2.5 0 1,0 85,71"
+        android:fillColor="#FF181A1E" />
+    <path
+        android:pathData="M108,68 C112,65 118,65 122,68"
+        android:strokeColor="#FF181A1E"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M113,71 A2.5,2.5 0 1,0 115,71 A2.5,2.5 0 1,0 113,71"
+        android:fillColor="#FF181A1E" />
+
+    <!-- Radiant Open Smile with Teeth -->
+    <path
+        android:pathData="M86,94 C93,106 107,106 114,94"
+        android:strokeColor="#FF2B1408"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M88,95 C93,103 107,103 112,95 Z"
+        android:fillColor="#FFFFFFFF" />
+
+    <!-- HPCZ Shield -->
+    <path
+        android:pathData="M162,22 L178,22 C178,35 170,44 162,48 C154,44 146,35 146,22 Z"
+        android:fillColor="#FF2EA84F" />
+    <path
+        android:pathData="M157,32 L161,36 L168,28"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

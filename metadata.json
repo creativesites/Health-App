@@ -1,0 +1,6 @@
+{
+  "name": "Healthcare",
+  "description": "Zambia-first digital healthcare platform connecting patients with verified healthcare professionals and practices.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
