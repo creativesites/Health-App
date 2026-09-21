@@ -274,22 +274,17 @@ fun SpecialistPatientsScreen(
                 }
             },
             confirmButton = {
-                Button(
+                CalmButton(
+                    text = "Direct Message",
                     onClick = {
-                        val p = selectedPatient ?: return@Button
+                        val p = selectedPatient ?: return@CalmButton
                         selectedPatient = null
                         onOpenPatientChat(p.patientId, p.displayName)
                     },
-                    shape = CalmLightShapes.Pill,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = CalmSphereBlue,
-                        contentColor = CalmWhite
-                    )
-                ) {
-                    Icon(imageVector = Icons.Outlined.ChatBubbleOutline, contentDescription = null, modifier = Modifier.size(15.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Direct Message", style = MaterialTheme.typography.labelMedium.copy(fontFamily = InterFontFamily))
-                }
+                    variant = CalmButtonVariant.Primary,
+                    icon = Icons.Outlined.ChatBubbleOutline,
+                    modifier = Modifier.height(40.dp)
+                )
             },
             dismissButton = {
                 TextButton(onClick = { selectedPatient = null }) {
@@ -609,47 +604,20 @@ private fun PatientRosterCard(
                 )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(
+                    CalmButton(
+                        text = "Intake File",
                         onClick = onOpenDetail,
-                        shape = CalmLightShapes.Pill,
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                        modifier = Modifier.height(34.dp)
-                    ) {
-                        Text(
-                            text = "Intake File",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontFamily = InterFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.sp
-                            )
-                        )
-                    }
+                        variant = CalmButtonVariant.Secondary,
+                        modifier = Modifier.height(36.dp)
+                    )
 
-                    Button(
+                    CalmButton(
+                        text = "Message",
                         onClick = onOpenChat,
-                        shape = CalmLightShapes.Pill,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CalmEmerald,
-                            contentColor = CalmWhite
-                        ),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                        modifier = Modifier.height(34.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.ChatBubbleOutline,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Message",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontFamily = InterFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.sp
-                            )
-                        )
-                    }
+                        variant = CalmButtonVariant.Primary,
+                        icon = Icons.Outlined.ChatBubbleOutline,
+                        modifier = Modifier.height(36.dp)
+                    )
                 }
             }
         }

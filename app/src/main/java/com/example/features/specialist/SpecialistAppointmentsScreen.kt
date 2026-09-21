@@ -369,69 +369,28 @@ private fun SpecialistScheduleCard(
                 if (appointment.status == AppointmentStatus.PENDING_PAYMENT ||
                     appointment.status == AppointmentStatus.RESCHEDULE_REQUESTED
                 ) {
-                    Button(
+                    CalmButton(
+                        text = "Confirm Booking",
                         onClick = onConfirmRequest,
-                        shape = CalmLightShapes.Pill,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CalmEmerald,
-                            contentColor = CalmWhite
-                        ),
+                        variant = CalmButtonVariant.Primary,
                         modifier = Modifier.weight(1f).height(42.dp)
-                    ) {
-                        Text(
-                            text = "Confirm Booking",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontFamily = InterFontFamily,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        )
-                    }
+                    )
                 } else {
-                    OutlinedButton(
+                    CalmButton(
+                        text = "Clinical Notes",
                         onClick = onWriteEncounterNotes,
-                        shape = CalmLightShapes.Pill,
+                        variant = CalmButtonVariant.Secondary,
+                        icon = Icons.Outlined.EditNote,
                         modifier = Modifier.weight(1f).height(42.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.EditNote,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Clinical Notes",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontFamily = InterFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.5.sp
-                            )
-                        )
-                    }
+                    )
 
-                    Button(
+                    CalmButton(
+                        text = "Launch",
                         onClick = onStartConsultation,
-                        shape = CalmLightShapes.Pill,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CalmDarkMatte,
-                            contentColor = CalmWhite
-                        ),
+                        variant = CalmButtonVariant.Primary,
+                        icon = Icons.Outlined.Videocam,
                         modifier = Modifier.weight(1f).height(42.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Videocam,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Launch",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontFamily = InterFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.5.sp
-                            )
-                        )
-                    }
+                    )
                 }
             }
         }

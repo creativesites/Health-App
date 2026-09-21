@@ -516,8 +516,9 @@ fun SpecialistEncounterNotesScreen(
                     }
                 }
 
-                // Save Button (Styled with Pill shape and CalmDarkMatte)
-                Button(
+                // Save Button (Styled with premium CalmButton component)
+                CalmButton(
+                    text = "Save Clinical Encounter Notes",
                     onClick = {
                         isSaving = true
                         coroutineScope.launch {
@@ -562,33 +563,13 @@ fun SpecialistEncounterNotesScreen(
                             showSuccessBanner = true
                         }
                     },
-                    shape = CalmLightShapes.Pill,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = CalmDarkMatte,
-                        contentColor = CalmWhite
-                    ),
+                    variant = CalmButtonVariant.Primary,
+                    icon = Icons.Default.Save,
+                    isLoading = isSaving,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
                         .testTag("btn_save_encounter_notes")
-                ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(color = CalmWhite, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                    } else {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(imageVector = Icons.Default.Save, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Save Clinical Encounter Notes",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontFamily = InterFontFamily,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 15.sp
-                                )
-                            )
-                        }
-                    }
-                }
+                )
 
                 Spacer(modifier = Modifier.height(40.dp))
             }

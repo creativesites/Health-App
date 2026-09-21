@@ -968,41 +968,19 @@ private fun SpecialistAppointmentCompactCard(
                 )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(
+                    CalmButton(
+                        text = "Notes",
                         onClick = onWriteEncounterNotes,
-                        shape = CalmLightShapes.Pill,
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                        modifier = Modifier.height(34.dp)
-                    ) {
-                        Text(
-                            text = "Notes",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontFamily = InterFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.sp
-                            )
-                        )
-                    }
+                        variant = CalmButtonVariant.Secondary,
+                        modifier = Modifier.height(36.dp)
+                    )
 
-                    Button(
+                    CalmButton(
+                        text = "Launch",
                         onClick = onStartConsultation,
-                        shape = CalmLightShapes.Pill,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CalmDarkMatte,
-                            contentColor = CalmWhite
-                        ),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                        modifier = Modifier.height(34.dp)
-                    ) {
-                        Text(
-                            text = "Launch",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontFamily = InterFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.sp
-                            )
-                        )
-                    }
+                        variant = CalmButtonVariant.Primary,
+                        modifier = Modifier.height(36.dp)
+                    )
                 }
             }
         }

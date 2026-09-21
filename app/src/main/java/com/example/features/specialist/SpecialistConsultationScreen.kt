@@ -311,29 +311,13 @@ fun SpecialistConsultationScreen(
                         }
 
                         // End Consultation CTA
-                        Button(
+                        CalmButton(
+                            text = "Conclude",
                             onClick = { showEndDialog = true },
-                            shape = CalmLightShapes.Pill,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = CalmCrisisCoral,
-                                contentColor = CalmWhite
-                            ),
+                            variant = CalmButtonVariant.Crisis,
+                            icon = Icons.Default.CallEnd,
                             modifier = Modifier.testTag("btn_specialist_end_call")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CallEnd,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Conclude",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontFamily = InterFontFamily,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            )
-                        }
+                        )
                     }
                 }
             }
