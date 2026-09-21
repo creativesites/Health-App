@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -18,6 +19,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import com.example.core.design.*
 import com.example.core.model.Appointment
 import com.example.core.model.AppointmentStatus
@@ -39,6 +44,7 @@ fun SpecialistConsultationScreen(
 
     var isMicMuted by remember { mutableStateOf(false) }
     var isVideoMuted by remember { mutableStateOf(false) }
+    var isChatOpen by remember { mutableStateOf(false) }
     var elapsedSeconds by remember { mutableIntStateOf(184) } // Demo start at 3:04
     var showEndDialog by remember { mutableStateOf(false) }
 
@@ -114,136 +120,237 @@ fun SpecialistConsultationScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // Main Virtual Room Viewport
-            Column(
+            // High-fidelity Patient video viewport (Central Main Area)
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 70.dp, bottom = 100.dp) // Leave space for top and bottom bars
+                    .clip(CalmLightShapes.Prominent)
+                    .background(Color(0xFF0F1C2E)),
+                contentAlignment = Alignment.Center
             ) {
-                // Top Info Bar
+                if (isVideoMuted) {
+                    // Muted placeholder state
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        TheSphere(size = 80.dp, isBreathing = true)
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Text(
+                            text = "Patient video stream disabled",
+                            style = MaterialTheme.typography.bodyMedium.copy(color = CalmSoftSlate)
+                        )
+                    }
+                } else {
+                    // Simulated Patient Camera Feed
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                androidx.compose.ui.graphics.Brush.linearGradient(
+                                    listOf(Color(0xFF1E355E), Color(0xFF0F1C2E))
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Outlined.Person,
+                                contentDescription = null,
+                                tint = CalmWhite.copy(alpha = 0.15f),
+                                modifier = Modifier.size(110.dp)
+                            )
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Text(
+                                text = "Kondwani Tembo (Patient Feed)",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontFamily = OutfitFontFamily,
+                                    color = CalmWhite.copy(alpha = 0.8f)
+                                )
+                            )
+                        }
+                    }
+                }
+
+                // Medical telemetry overlay (Simulating live practitioner metrics!)
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        shape = CalmLightShapes.Pill,
+                        color = Color.Black.copy(alpha = 0.6f),
+                        border = BorderStroke(1.dp, Color(0xFF264366))
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Favorite,
+                                contentDescription = null,
+                                tint = CalmCrisisCoral,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "72 bpm",
+                                color = CalmWhite,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    
+                    Surface(
+                        shape = CalmLightShapes.Pill,
+                        color = Color.Black.copy(alpha = 0.6f),
+                        border = BorderStroke(1.dp, Color(0xFF264366))
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.DeviceThermostat,
+                                contentDescription = null,
+                                tint = CalmHoneyGold,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Temp: 36.6 °C",
+                                color = CalmWhite,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+
+                // Local Specialist PIP Window (Dr. Chileshe's camera feed)
+                val isViewerChileshe = true
+                val docImage = if (isViewerChileshe) R.drawable.doc_mwansa_chileshe else R.drawable.doc_thandiwe_zulu
+                Surface(
+                    shape = CalmLightShapes.Standard,
+                    color = Color(0xFF1E355E),
+                    border = BorderStroke(1.5.dp, CalmEmerald),
+                    shadowElevation = 8.dp,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                        .size(width = 100.dp, height = 135.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Image(
+                            painter = painterResource(id = docImage),
+                            contentDescription = "My Camera Feed",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    androidx.compose.ui.graphics.Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Black.copy(alpha = 0.3f),
+                                            Color.Transparent
+                                        )
+                                    )
+                                )
+                        )
+                        Text(
+                            text = "You (REC)",
+                            color = CalmWhite,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .padding(6.dp)
+                        )
+                    }
+                }
+            }
+
+            // Top Status Bar: Call duration & connection indicator
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
+                    .statusBarsPadding()
+                    .padding(horizontal = 20.dp, vertical = 14.dp)
+            ) {
+                // Info Badge
                 Surface(
                     shape = CalmLightShapes.Pill,
-                    color = CalmInkNavy.copy(alpha = 0.85f),
-                    border = BorderStroke(1.dp, CalmWhite.copy(alpha = 0.15f))
+                    color = Color(0xFF13253D).copy(alpha = 0.9f),
+                    border = BorderStroke(1.dp, Color(0xFF243C5E))
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
                     ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = CalmEmerald,
-                            modifier = Modifier.size(8.dp)
-                        ) {}
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(CalmEmerald)
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Live Clinical Room • $durationFormatted",
+                            text = "Live Room • $durationFormatted",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontFamily = InterFontFamily,
                                 color = CalmWhite,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 13.sp
+                                fontWeight = FontWeight.SemiBold
                             )
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Surface(
-                            shape = CalmLightShapes.Pill,
-                            color = CalmWhite.copy(alpha = 0.15f)
-                        ) {
-                            Text(
-                                text = "Encrypted",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontFamily = InterFontFamily,
-                                    color = CalmSessionsAura,
-                                    fontSize = 11.sp
-                                ),
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                            )
-                        }
                     }
                 }
 
-                // Patient Video Representation / Visual Sanctuary
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = CalmSphereBlue.copy(alpha = 0.12f),
-                        border = BorderStroke(2.dp, CalmSphereBlue.copy(alpha = 0.35f)),
-                        modifier = Modifier.size(130.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            TheSphere(size = 90.dp, isBreathing = true)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Text(
-                        text = "Patient: ${appointment?.patientName ?: "Kondwani Tembo"}",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontFamily = OutfitFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            color = CalmWhite,
-                            fontSize = 22.sp
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = "Consultation: ${appointment?.serviceName ?: "Clinical Session"}",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontFamily = InterFontFamily,
-                            color = CalmWhite.copy(alpha = 0.7f),
-                            fontSize = 14.sp
-                        )
-                    )
-
-                    if (!appointment?.intakeNotes.isNullOrBlank()) {
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Surface(
-                            shape = CalmLightShapes.Standard,
-                            color = CalmWhite.copy(alpha = 0.08f),
-                            border = BorderStroke(1.dp, CalmWhite.copy(alpha = 0.12f)),
-                            modifier = Modifier.fillMaxWidth(0.9f)
-                        ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
-                                Text(
-                                    text = "Intake Reference:",
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontFamily = InterFontFamily,
-                                        color = CalmSessionsAura,
-                                        fontSize = 11.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(
-                                    text = appointment?.intakeNotes ?: "",
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontFamily = InterFontFamily,
-                                        color = CalmWhite,
-                                        fontSize = 12.sp,
-                                        lineHeight = 16.sp
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Controls Bar
+                // Encryption pill
                 Surface(
                     shape = CalmLightShapes.Pill,
-                    color = CalmInkNavy.copy(alpha = 0.95f),
-                    border = BorderStroke(1.dp, CalmWhite.copy(alpha = 0.2f)),
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    color = Color(0xFF13253D).copy(alpha = 0.9f),
+                    border = BorderStroke(1.dp, Color(0xFF243C5E))
                 ) {
                     Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Lock,
+                            contentDescription = "Encrypted",
+                            tint = CalmSessionsAura,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "HPCZ Secure",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontFamily = InterFontFamily,
+                                color = CalmSessionsAura,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                }
+            }
+
+            // Controls Bar (Overlay at bottom)
+            Surface(
+                shape = CalmLightShapes.Pill,
+                color = CalmInkNavy.copy(alpha = 0.95f),
+                border = BorderStroke(1.dp, CalmWhite.copy(alpha = 0.2f)),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp)
+            ) {
+                Row(
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -292,15 +399,10 @@ fun SpecialistConsultationScreen(
 
                         // In-call Chat
                         IconButton(
-                            onClick = {
-                                onOpenChat(
-                                    "conv_${appointment?.patientId ?: "pat_demo_me"}",
-                                    appointment?.patientName ?: "Kondwani Tembo"
-                                )
-                            },
+                            onClick = { isChatOpen = !isChatOpen },
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(CalmWhite.copy(alpha = 0.1f))
+                                .background(if (isChatOpen) CalmSphereBlue else CalmWhite.copy(alpha = 0.1f))
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.ChatBubbleOutline,
@@ -308,8 +410,6 @@ fun SpecialistConsultationScreen(
                                 tint = CalmWhite,
                                 modifier = Modifier.size(20.dp)
                             )
-                        }
-
                         // End Consultation CTA
                         CalmButton(
                             text = "Conclude",
@@ -318,6 +418,115 @@ fun SpecialistConsultationScreen(
                             icon = Icons.Default.CallEnd,
                             modifier = Modifier.testTag("btn_specialist_end_call")
                         )
+                        }
+                        }
+                        }
+
+                        // Integrated Chat Overlay
+                        AnimatedVisibility(
+                visible = isChatOpen,
+                enter = androidx.compose.animation.slideInVertically(initialOffsetY = { it / 2 }) + androidx.compose.animation.fadeIn(),
+                exit = androidx.compose.animation.slideOutVertically(targetOffsetY = { it / 2 }) + androidx.compose.animation.fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 100.dp) // Sits above the dock
+                    .padding(horizontal = 16.dp)
+            ) {
+                Surface(
+                    shape = CalmLightShapes.Prominent,
+                    color = Color(0xFF162840).copy(alpha = 0.95f),
+                    border = BorderStroke(1.dp, Color(0xFF385882)),
+                    shadowElevation = 24.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                ) {
+                    Column {
+                        // Header
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "In-Call Messages",
+                                style = MaterialTheme.typography.titleSmall.copy(color = CalmWhite)
+                            )
+                            IconButton(
+                                onClick = { isChatOpen = false },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(Icons.Default.Close, contentDescription = "Close chat", tint = CalmSoftSlate)
+                            }
+                        }
+                        HorizontalDivider(color = Color(0xFF243C5E))
+                        
+                        // Messages Area (Mocked for in-call)
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+                            // Mock message from patient
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = CalmSphereBlue,
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text("K", color = CalmWhite, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp),
+                                    color = Color(0xFF243C5E)
+                                ) {
+                                    Text(
+                                        text = "Yes, I usually wake up around 3 AM and struggle to fall back asleep for about an hour.",
+                                        style = MaterialTheme.typography.bodySmall.copy(color = CalmWhite),
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                            }
+                        }
+                        
+                        // Input Area
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(12.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = "",
+                                onValueChange = {},
+                                placeholder = { Text("Type a message...", color = CalmSoftSlate, fontSize = 13.sp) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp),
+                                shape = CalmLightShapes.Pill,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFF0C1B2E),
+                                    unfocusedContainerColor = Color(0xFF0C1B2E),
+                                    focusedBorderColor = CalmSphereBlue,
+                                    unfocusedBorderColor = Color(0xFF243C5E),
+                                    focusedTextColor = CalmWhite,
+                                    unfocusedTextColor = CalmWhite
+                                )
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            IconButton(
+                                onClick = { },
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .background(CalmSphereBlue, CircleShape)
+                            ) {
+                                Icon(Icons.Default.Send, contentDescription = "Send", tint = CalmWhite, modifier = Modifier.size(18.dp))
+                            }
+                        }
                     }
                 }
             }

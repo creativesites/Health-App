@@ -151,14 +151,14 @@ fun CareScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        OutlinedButton(
+                        CalmButton(
+                            text = "Cancel",
                             onClick = { viewModel.closeAddGoalDialog() },
-                            shape = CalmLightShapes.Pill,
+                            variant = CalmButtonVariant.Secondary,
                             modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Cancel")
-                        }
-                        Button(
+                        )
+                        CalmButton(
+                            text = "Add Goal",
                             onClick = {
                                 if (goalTitle.isNotBlank()) {
                                     viewModel.saveNewGoal(
@@ -168,12 +168,9 @@ fun CareScreen(
                                     )
                                 }
                             },
-                            shape = CalmLightShapes.Pill,
-                            colors = ButtonDefaults.buttonColors(containerColor = CalmSphereBlue),
+                            variant = CalmButtonVariant.Primary,
                             modifier = Modifier.weight(1.3f)
-                        ) {
-                            Text("Add Goal")
-                        }
+                        )
                     }
                 }
             }
@@ -346,14 +343,14 @@ fun CareScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        OutlinedButton(
+                        CalmButton(
+                            text = "Cancel",
                             onClick = { viewModel.closeMoodDialog() },
-                            shape = CalmLightShapes.Pill,
+                            variant = CalmButtonVariant.Secondary,
                             modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Cancel")
-                        }
-                        Button(
+                        )
+                        CalmButton(
+                            text = "Save Check-in",
                             onClick = {
                                 val label = moods.first { it.first == selectedMoodScore }.second
                                 viewModel.saveMood(
@@ -364,14 +361,11 @@ fun CareScreen(
                                 )
                                 moodNote = ""
                             },
-                            shape = CalmLightShapes.Pill,
-                            colors = ButtonDefaults.buttonColors(containerColor = CalmSphereBlue),
+                            variant = CalmButtonVariant.Primary,
                             modifier = Modifier
                                 .weight(1.3f)
                                 .testTag("save_mood_dialog_btn")
-                        ) {
-                            Text("Save Check-in")
-                        }
+                        )
                     }
                 }
             }
@@ -448,14 +442,14 @@ fun CareScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        OutlinedButton(
+                        CalmButton(
+                            text = "Cancel",
                             onClick = { viewModel.closeJournalDialog() },
-                            shape = CalmLightShapes.Pill,
+                            variant = CalmButtonVariant.Secondary,
                             modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Cancel")
-                        }
-                        Button(
+                        )
+                        CalmButton(
+                            text = "Save Reflection",
                             onClick = {
                                 if (journalTitle.isNotBlank()) {
                                     viewModel.saveJournalEntry(
@@ -467,14 +461,11 @@ fun CareScreen(
                                     journalReflection = ""
                                 }
                             },
-                            shape = CalmLightShapes.Pill,
-                            colors = ButtonDefaults.buttonColors(containerColor = CalmSphereBlue),
+                            variant = CalmButtonVariant.Primary,
                             modifier = Modifier
                                 .weight(1.3f)
                                 .testTag("save_journal_entry_btn")
-                        ) {
-                            Text("Save Reflection")
-                        }
+                        )
                     }
                 }
             }
@@ -717,30 +708,13 @@ fun CareScreen(
                         )
                     }
 
-                    Button(
+                    CalmButton(
+                        text = "Log Mood",
                         onClick = { viewModel.openMoodDialog() },
-                        shape = CalmLightShapes.Pill,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CalmSphereBlue,
-                            contentColor = CalmWhite
-                        ),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                        modifier = Modifier.testTag("btn_log_mood")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Log Mood",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontFamily = OutfitFontFamily,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        )
-                    }
+                        variant = CalmButtonVariant.Primary,
+                        icon = Icons.Default.Add,
+                        modifier = Modifier.height(38.dp).testTag("btn_log_mood")
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -838,6 +812,142 @@ fun CareScreen(
                             }
                         }
                     }
+                    
+                    Spacer(modifier = Modifier.height(20.dp))
+                    
+                    // Advanced Mood Trends Chart (Phase 2 Polish)
+                    if (uiState.moodCheckIns.size > 1) {
+                        Surface(
+                            shape = CalmLightShapes.Prominent,
+                            color = CalmWhite,
+                            border = BorderStroke(1.dp, CalmHairline),
+                            shadowElevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(140.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Weekly Mood Trends",
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            fontFamily = OutfitFontFamily,
+                                            color = CalmInkNavy,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    )
+                                    Text(
+                                        text = "Last 7 entries",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontFamily = InterFontFamily,
+                                            color = CalmSlate
+                                        )
+                                    )
+                                }
+                                
+                                Spacer(modifier = Modifier.height(12.dp))
+                                
+                                val recentMoods = uiState.moodCheckIns.take(7).reversed()
+                                androidx.compose.foundation.Canvas(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                ) {
+                                    val canvasWidth = size.width
+                                    val canvasHeight = size.height
+                                    val pointSpacing = canvasWidth / (recentMoods.size - 1).coerceAtLeast(1)
+                                    
+                                    val points = recentMoods.mapIndexed { index, mood ->
+                                        val x = index * pointSpacing
+                                        // Score 1 (bottom) to 5 (top)
+                                        val normalizedY = 1f - ((mood.moodValue - 1) / 4f)
+                                        val y = normalizedY * (canvasHeight - 20.dp.toPx()) + 10.dp.toPx()
+                                        androidx.compose.ui.geometry.Offset(x, y)
+                                    }
+                                    
+                                    // Draw subtle grid lines
+                                    for (i in 0..4) {
+                                        val y = (i / 4f) * (canvasHeight - 20.dp.toPx()) + 10.dp.toPx()
+                                        drawLine(
+                                            color = CalmHairline,
+                                            start = androidx.compose.ui.geometry.Offset(0f, y),
+                                            end = androidx.compose.ui.geometry.Offset(canvasWidth, y),
+                                            strokeWidth = 1f
+                                        )
+                                    }
+                                    
+                                    // Draw connection path
+                                    val path = androidx.compose.ui.graphics.Path()
+                                    points.forEachIndexed { index, point ->
+                                        if (index == 0) {
+                                            path.moveTo(point.x, point.y)
+                                        } else {
+                                            val previous = points[index - 1]
+                                            val controlPointX = (previous.x + point.x) / 2
+                                            path.cubicTo(
+                                                controlPointX, previous.y,
+                                                controlPointX, point.y,
+                                                point.x, point.y
+                                            )
+                                        }
+                                    }
+                                    
+                                    // Stroke the path
+                                    drawPath(
+                                        path = path,
+                                        color = CalmSphereBlue,
+                                        style = androidx.compose.ui.graphics.drawscope.Stroke(
+                                            width = 3.dp.toPx(),
+                                            cap = androidx.compose.ui.graphics.StrokeCap.Round
+                                        )
+                                    )
+                                    
+                                    // Draw gradient fill below path
+                                    val fillPath = androidx.compose.ui.graphics.Path().apply {
+                                        addPath(path)
+                                        lineTo(canvasWidth, canvasHeight)
+                                        lineTo(0f, canvasHeight)
+                                        close()
+                                    }
+                                    drawPath(
+                                        path = fillPath,
+                                        brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                                            colors = listOf(
+                                                CalmSphereBlue.copy(alpha = 0.2f),
+                                                Color.Transparent
+                                            ),
+                                            startY = 0f,
+                                            endY = canvasHeight
+                                        )
+                                    )
+                                    
+                                    // Draw data points
+                                    points.forEachIndexed { index, point ->
+                                        val moodValue = recentMoods[index].moodValue
+                                        val pointColor = when (moodValue) {
+                                            5, 4 -> CalmEmerald
+                                            3 -> CalmHoneyGoldDark
+                                            else -> CalmCrisisCoral
+                                        }
+                                        drawCircle(
+                                            color = CalmWhite,
+                                            radius = 6.dp.toPx(),
+                                            center = point
+                                        )
+                                        drawCircle(
+                                            color = pointColor,
+                                            radius = 4.dp.toPx(),
+                                            center = point
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -879,26 +989,13 @@ fun CareScreen(
                         }
                     }
 
-                    TextButton(
+                    CalmButton(
+                        text = "Add Goal",
                         onClick = { viewModel.openAddGoalDialog() },
-                        modifier = Modifier.testTag("btn_add_care_goal")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddCircleOutline,
-                            contentDescription = null,
-                            tint = CalmSphereBlue,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Add Goal",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontFamily = InterFontFamily,
-                                color = CalmSphereBlue,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        )
-                    }
+                        variant = CalmButtonVariant.Secondary,
+                        icon = Icons.Default.AddCircleOutline,
+                        modifier = Modifier.height(34.dp).testTag("btn_add_care_goal")
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -1013,26 +1110,13 @@ fun CareScreen(
                         )
                     }
 
-                    TextButton(
+                    CalmButton(
+                        text = "Write Entry",
                         onClick = { viewModel.openJournalDialog() },
-                        modifier = Modifier.testTag("btn_add_journal_entry")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.EditNote,
-                            contentDescription = null,
-                            tint = CalmSphereBlue,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Write Entry",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontFamily = InterFontFamily,
-                                color = CalmSphereBlue,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        )
-                    }
+                        variant = CalmButtonVariant.Secondary,
+                        icon = Icons.Outlined.EditNote,
+                        modifier = Modifier.height(34.dp).testTag("btn_add_journal_entry")
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))

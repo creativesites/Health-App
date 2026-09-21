@@ -638,29 +638,15 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Switch Role / Log Out / Reset Demo
-                OutlinedButton(
+                CalmButton(
+                    text = "Switch Role / Log Out to Specialist Mode",
                     onClick = onRestartOnboarding,
-                    shape = CalmLightShapes.Pill,
-                    border = BorderStroke(1.dp, CalmHairline),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = CalmInkNavy),
+                    variant = CalmButtonVariant.Secondary,
+                    icon = Icons.AutoMirrored.Filled.Logout,
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("profile_sign_out_btn")
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Logout,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Switch Role / Log Out to Specialist Mode",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontFamily = InterFontFamily,
-                            fontWeight = FontWeight.Medium
-                        )
-                    )
-                }
+                )
 
                 Spacer(modifier = Modifier.height(32.dp))
             }
@@ -844,31 +830,17 @@ fun EditProfileModal(
                         Spacer(modifier = Modifier.width(16.dp))
 
                         Column {
-                            OutlinedButton(
+                            CalmButton(
+                                text = "Choose Photo",
                                 onClick = {
                                     photoPickerLauncher.launch(
                                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                     )
                                 },
-                                shape = CalmLightShapes.Pill,
-                                border = BorderStroke(1.dp, CalmSphereBlue),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = CalmSphereBlue),
+                                variant = CalmButtonVariant.Secondary,
+                                icon = Icons.Default.PhotoLibrary,
                                 modifier = Modifier.testTag("pick_photo_btn")
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.PhotoLibrary,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "Choose Photo",
-                                    style = MaterialTheme.typography.labelMedium.copy(
-                                        fontFamily = InterFontFamily,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                )
-                            }
+                            )
 
                             if (!avatarUri.isNullOrBlank()) {
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -1112,17 +1084,15 @@ fun EditProfileModal(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    OutlinedButton(
+                    CalmButton(
+                        text = "Cancel",
                         onClick = onDismiss,
-                        shape = CalmLightShapes.Pill,
-                        border = BorderStroke(1.dp, CalmHairline),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = CalmSlate),
+                        variant = CalmButtonVariant.Secondary,
                         modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Cancel")
-                    }
+                    )
 
-                    Button(
+                    CalmButton(
+                        text = "Save Profile",
                         onClick = {
                             if (fullName.isNotBlank()) {
                                 onSave(
@@ -1137,29 +1107,12 @@ fun EditProfileModal(
                                 )
                             }
                         },
-                        shape = CalmLightShapes.Pill,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CalmSphereBlue,
-                            contentColor = CalmWhite
-                        ),
+                        variant = CalmButtonVariant.Primary,
+                        icon = Icons.Default.Check,
                         modifier = Modifier
                             .weight(1.4f)
                             .testTag("save_profile_btn")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Save Profile",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                fontFamily = OutfitFontFamily,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        )
-                    }
+                    )
                 }
             }
         }

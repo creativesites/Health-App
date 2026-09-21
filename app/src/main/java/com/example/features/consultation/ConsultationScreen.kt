@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -185,38 +186,131 @@ fun ConsultationScreen(
                         .fillMaxSize()
                         .padding(horizontal = 16.dp, vertical = 80.dp)
                         .clip(CalmLightShapes.Prominent)
-                        .background(Color(0xFF162840)),
+                        .background(Color(0xFF0F1C2E)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        TheSphere(size = 72.dp, isBreathing = true)
-                        Spacer(modifier = Modifier.height(14.dp))
+                    val docImage = when {
+                        appointment?.practitionerName?.contains("Zulu") == true -> R.drawable.doc_thandiwe_zulu
+                        appointment?.practitionerName?.contains("Phiri") == true -> R.drawable.doc_kachinga_phiri
+                        appointment?.practitionerName?.contains("Banda") == true -> R.drawable.doc_kondwani_banda
+                        else -> R.drawable.doc_mwansa_chileshe
+                    }
+                    
+                    // Full bleed Doctor video stream
+                    Image(
+                        painter = painterResource(id = docImage),
+                        contentDescription = "Doctor Video Stream",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                    
+                    // Dynamic Overlay for connection quality / status
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                androidx.compose.ui.graphics.Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.Black.copy(alpha = 0.4f),
+                                        Color.Transparent,
+                                        Color.Black.copy(alpha = 0.6f)
+                                    )
+                                )
+                            )
+                    )
+
+                    // Doctor Name and verified tag in-stream
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(16.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = appointment?.practitionerName ?: "Dr. Mwansa Chileshe",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontFamily = OutfitFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = CalmWhite
+                                )
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Surface(
+                                shape = CircleShape,
+                                color = CalmEmerald,
+                                modifier = Modifier.size(6.dp)
+                            ) {}
+                        }
                         Text(
-                            text = "${appointment?.practitionerName ?: "Dr. Mwansa Chileshe"}",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontFamily = OutfitFontFamily,
-                                color = CalmWhite
+                            text = appointment?.practitionerTitle ?: "Clinical Psychologist",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontFamily = InterFontFamily,
+                                color = CalmWhite.copy(alpha = 0.8f)
                             )
                         )
                     }
 
-                    // Self-preview PIP
+                    // Self-preview PIP with simulated camera parameters
                     Surface(
                         shape = CalmLightShapes.Standard,
-                        color = Color(0xFF243B5C),
-                        border = BorderStroke(1.dp, Color(0xFF385882)),
+                        color = Color(0xFF1E355E),
+                        border = BorderStroke(1.5.dp, CalmSphereBlue),
+                        shadowElevation = 8.dp,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(16.dp)
-                            .size(width = 90.dp, height = 120.dp)
+                            .size(width = 100.dp, height = 135.dp)
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                "You",
-                                color = CalmWhite,
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontFamily = InterFontFamily
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            // Simulated local camera feed
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        androidx.compose.ui.graphics.Brush.linearGradient(
+                                            listOf(Color(0xFF2E4C7A), Color(0xFF1E355E))
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Person,
+                                    contentDescription = null,
+                                    tint = CalmWhite.copy(alpha = 0.35f),
+                                    modifier = Modifier.size(38.dp)
                                 )
+                            }
+                            
+                            // Glowing REC dot
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .align(Alignment.TopStart)
+                                    .padding(6.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .clip(CircleShape)
+                                        .background(CalmCrisisCoral)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    "REC",
+                                    color = CalmWhite,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            
+                            // Shutter details
+                            Text(
+                                "HD 1080p",
+                                color = CalmWhite.copy(alpha = 0.6f),
+                                fontSize = 8.sp,
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(bottom = 6.dp)
                             )
                         }
                     }
@@ -361,12 +455,10 @@ fun ConsultationScreen(
 
                     // In-call Chat
                     IconButton(
-                        onClick = {
-                            onOpenChat("conv_in_call", appointment?.practitionerName ?: "Practitioner")
-                        },
+                        onClick = { viewModel.toggleChat() },
                         modifier = Modifier
                             .size(48.dp)
-                            .background(Color(0xFF233D61), CircleShape)
+                            .background(if (uiState.isChatOpen) CalmSphereBlue else Color(0xFF233D61), CircleShape)
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.ChatBubbleOutline,
@@ -390,6 +482,115 @@ fun ConsultationScreen(
                             tint = CalmWhite,
                             modifier = Modifier.size(22.dp)
                         )
+                    }
+                }
+            }
+            
+            // Integrated Chat Overlay
+            AnimatedVisibility(
+                visible = uiState.isChatOpen,
+                enter = androidx.compose.animation.slideInVertically(initialOffsetY = { it / 2 }) + androidx.compose.animation.fadeIn(),
+                exit = androidx.compose.animation.slideOutVertically(targetOffsetY = { it / 2 }) + androidx.compose.animation.fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 100.dp) // Sits above the dock
+                    .padding(horizontal = 16.dp)
+            ) {
+                Surface(
+                    shape = CalmLightShapes.Prominent,
+                    color = Color(0xFF162840).copy(alpha = 0.95f),
+                    border = BorderStroke(1.dp, Color(0xFF385882)),
+                    shadowElevation = 24.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                ) {
+                    Column {
+                        // Header
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "In-Call Messages",
+                                style = MaterialTheme.typography.titleSmall.copy(color = CalmWhite)
+                            )
+                            IconButton(
+                                onClick = { viewModel.toggleChat() },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(Icons.Default.Close, contentDescription = "Close chat", tint = CalmSoftSlate)
+                            }
+                        }
+                        HorizontalDivider(color = Color(0xFF243C5E))
+                        
+                        // Messages Area (Mocked for in-call)
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+                            // Mock message from doctor
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = CalmSphereBlue,
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text("Dr", color = CalmWhite, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp),
+                                    color = Color(0xFF243C5E)
+                                ) {
+                                    Text(
+                                        text = "Hello Kondwani, I'm reviewing your sleep journal now. Could you confirm if you're still waking up around 3 AM?",
+                                        style = MaterialTheme.typography.bodySmall.copy(color = CalmWhite),
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                            }
+                        }
+                        
+                        // Input Area
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(12.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = "",
+                                onValueChange = {},
+                                placeholder = { Text("Type a message...", color = CalmSoftSlate, fontSize = 13.sp) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp),
+                                shape = CalmLightShapes.Pill,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFF0C1B2E),
+                                    unfocusedContainerColor = Color(0xFF0C1B2E),
+                                    focusedBorderColor = CalmSphereBlue,
+                                    unfocusedBorderColor = Color(0xFF243C5E),
+                                    focusedTextColor = CalmWhite,
+                                    unfocusedTextColor = CalmWhite
+                                )
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            IconButton(
+                                onClick = { },
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .background(CalmSphereBlue, CircleShape)
+                            ) {
+                                Icon(Icons.Default.Send, contentDescription = "Send", tint = CalmWhite, modifier = Modifier.size(18.dp))
+                            }
+                        }
                     }
                 }
             }
