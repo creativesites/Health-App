@@ -94,7 +94,11 @@ fun PaymentScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (uiState.paymentStatus == PaymentStatus.PAID) {
+                androidx.compose.animation.AnimatedContent(
+                    targetState = uiState.paymentStatus,
+                    label = "payment_transition"
+                ) { status ->
+                    if (status == PaymentStatus.PAID) {
                     // Success Receipt State
                     CalmCard(
                         shape = CalmLightShapes.Hero,
@@ -340,7 +344,7 @@ fun PaymentScreen(
 
                     Spacer(modifier = Modifier.height(26.dp))
 
-                    if (uiState.paymentStatus == PaymentStatus.PROCESSING) {
+                    if (status == PaymentStatus.PROCESSING) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
@@ -366,6 +370,7 @@ fun PaymentScreen(
                         )
                     }
                 }
+                } // End AnimatedContent
 
                 Spacer(modifier = Modifier.height(36.dp))
             }

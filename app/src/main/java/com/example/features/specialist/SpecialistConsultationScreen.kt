@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -39,6 +40,7 @@ fun SpecialistConsultationScreen(
 
     var isMicMuted by remember { mutableStateOf(false) }
     var isVideoMuted by remember { mutableStateOf(false) }
+    var isChatOpen by remember { mutableStateOf(false) }
     var elapsedSeconds by remember { mutableIntStateOf(184) } // Demo start at 3:04
     var showEndDialog by remember { mutableStateOf(false) }
 
@@ -292,15 +294,10 @@ fun SpecialistConsultationScreen(
 
                         // In-call Chat
                         IconButton(
-                            onClick = {
-                                onOpenChat(
-                                    "conv_${appointment?.patientId ?: "pat_demo_me"}",
-                                    appointment?.patientName ?: "Kondwani Tembo"
-                                )
-                            },
+                            onClick = { isChatOpen = !isChatOpen },
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(CalmWhite.copy(alpha = 0.1f))
+                                .background(if (isChatOpen) CalmSphereBlue else CalmWhite.copy(alpha = 0.1f))
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.ChatBubbleOutline,
@@ -318,6 +315,115 @@ fun SpecialistConsultationScreen(
                             icon = Icons.Default.CallEnd,
                             modifier = Modifier.testTag("btn_specialist_end_call")
                         )
+                    }
+                }
+            }
+            
+            // Integrated Chat Overlay
+            AnimatedVisibility(
+                visible = isChatOpen,
+                enter = androidx.compose.animation.slideInVertically(initialOffsetY = { it / 2 }) + androidx.compose.animation.fadeIn(),
+                exit = androidx.compose.animation.slideOutVertically(targetOffsetY = { it / 2 }) + androidx.compose.animation.fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 100.dp) // Sits above the dock
+                    .padding(horizontal = 16.dp)
+            ) {
+                Surface(
+                    shape = CalmLightShapes.Prominent,
+                    color = Color(0xFF162840).copy(alpha = 0.95f),
+                    border = BorderStroke(1.dp, Color(0xFF385882)),
+                    shadowElevation = 24.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                ) {
+                    Column {
+                        // Header
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "In-Call Messages",
+                                style = MaterialTheme.typography.titleSmall.copy(color = CalmWhite)
+                            )
+                            IconButton(
+                                onClick = { isChatOpen = false },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(Icons.Default.Close, contentDescription = "Close chat", tint = CalmSoftSlate)
+                            }
+                        }
+                        HorizontalDivider(color = Color(0xFF243C5E))
+                        
+                        // Messages Area (Mocked for in-call)
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+                            // Mock message from patient
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = CalmSphereBlue,
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text("K", color = CalmWhite, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp),
+                                    color = Color(0xFF243C5E)
+                                ) {
+                                    Text(
+                                        text = "Yes, I usually wake up around 3 AM and struggle to fall back asleep for about an hour.",
+                                        style = MaterialTheme.typography.bodySmall.copy(color = CalmWhite),
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                            }
+                        }
+                        
+                        // Input Area
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(12.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = "",
+                                onValueChange = {},
+                                placeholder = { Text("Type a message...", color = CalmSoftSlate, fontSize = 13.sp) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp),
+                                shape = CalmLightShapes.Pill,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color(0xFF0C1B2E),
+                                    unfocusedContainerColor = Color(0xFF0C1B2E),
+                                    focusedBorderColor = CalmSphereBlue,
+                                    unfocusedBorderColor = Color(0xFF243C5E),
+                                    focusedTextColor = CalmWhite,
+                                    unfocusedTextColor = CalmWhite
+                                )
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            IconButton(
+                                onClick = { },
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .background(CalmSphereBlue, CircleShape)
+                            ) {
+                                Icon(Icons.Default.Send, contentDescription = "Send", tint = CalmWhite, modifier = Modifier.size(18.dp))
+                            }
+                        }
                     }
                 }
             }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 enum class ConnectionQuality(val label: String, val colorHex: Long) {
     EXCELLENT("Excellent connection", 0xFF059669),
@@ -28,7 +29,8 @@ data class ConsultationUiState(
     val connectionQuality: ConnectionQuality = ConnectionQuality.GOOD,
     val sessionDurationSeconds: Long = 184, // e.g. 03:04 elapsed
     val isInCall: Boolean = true,
-    val showLeaveDialog: Boolean = false
+    val showLeaveDialog: Boolean = false,
+    val isChatOpen: Boolean = false
 )
 
 class ConsultationViewModel(
@@ -55,13 +57,39 @@ class ConsultationViewModel(
         viewModelScope.launch {
             while (_uiState.value.isInCall) {
                 delay(1000)
-                _uiState.update { it.copy(sessionDurationSeconds = it.sessionDurationSeconds + 1) }
+                
+                // Simulate network fluctuation every ~15 seconds if not explicitly in fallback mode
+                var nextQuality = _uiState.value.connectionQuality
+                var forceFallback = _uiState.value.isAudioOnlyFallback
+                
+                if (!forceFallback && _uiState.value.sessionDurationSeconds % 15 == 0L) {
+                    val roll = Random.nextInt(100)
+                    nextQuality = when {
+                        roll < 70 -> ConnectionQuality.EXCELLENT
+                        roll < 90 -> ConnectionQuality.GOOD
+                        else -> ConnectionQuality.WEAK
+                    }
+                    
+                    if (nextQuality == ConnectionQuality.WEAK && _uiState.value.isCameraOn) {
+                        // Auto-disable camera on simulated weak connection
+                        forceFallback = true
+                        _uiState.update { it.copy(isCameraOn = false) }
+                    }
+                }
+
+                _uiState.update { 
+                    it.copy(
+                        sessionDurationSeconds = it.sessionDurationSeconds + 1,
+                        connectionQuality = nextQuality,
+                        isAudioOnlyFallback = forceFallback
+                    ) 
+                }
             }
         }
     }
 
     fun toggleCamera() {
-        _uiState.update { it.copy(isCameraOn = !it.isCameraOn) }
+        _uiState.update { it.copy(isCameraOn = !it.isCameraOn, isAudioOnlyFallback = false) }
     }
 
     fun toggleMic() {
@@ -81,6 +109,10 @@ class ConsultationViewModel(
                 isCameraOn = if (nextFallback) false else it.isCameraOn
             )
         }
+    }
+    
+    fun toggleChat() {
+        _uiState.update { it.copy(isChatOpen = !it.isChatOpen) }
     }
 
     fun promptLeaveCall() {

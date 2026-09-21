@@ -162,51 +162,21 @@ fun ProviderDetailScreen(
                             }
 
                             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                OutlinedButton(
+                                CalmButton(
+                                    text = "Message",
                                     onClick = { onMessageProvider(practitioner.id, practitioner.fullName) },
-                                    shape = CalmLightShapes.Pill,
-                                    border = BorderStroke(1.dp, CalmSphereBlue.copy(alpha = 0.5f)),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = CalmSphereBlue),
-                                    modifier = Modifier.testTag("btn_message_provider")
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.ChatBubbleOutline,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "Message",
-                                        style = MaterialTheme.typography.labelMedium.copy(
-                                            fontFamily = OutfitFontFamily,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    )
-                                }
+                                    variant = CalmButtonVariant.Secondary,
+                                    icon = Icons.Outlined.ChatBubbleOutline,
+                                    modifier = Modifier.weight(1f).testTag("btn_message_provider")
+                                )
 
-                                Button(
+                                CalmButton(
+                                    text = "Book Session",
                                     onClick = { onBookAppointment(practitioner.id) },
-                                    shape = CalmLightShapes.Pill,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = CalmSphereBlue,
-                                        contentColor = CalmWhite
-                                    ),
-                                    modifier = Modifier.testTag("btn_book_appointment")
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.CalendarToday,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "Book Session",
-                                        style = MaterialTheme.typography.labelMedium.copy(
-                                            fontFamily = OutfitFontFamily,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    )
-                                }
+                                    variant = CalmButtonVariant.Primary,
+                                    icon = Icons.Default.CalendarToday,
+                                    modifier = Modifier.weight(1.3f).testTag("btn_book_appointment")
+                                )
                             }
                         }
                     }

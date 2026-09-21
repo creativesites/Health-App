@@ -6,6 +6,7 @@ import com.example.core.model.ChatMessage
 import com.example.core.model.UserRole
 import com.example.core.repository.MessageRepository
 import com.example.core.repository.mock.AppRepositoryLocator
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,9 @@ data class MessagingUiState(
     val participantName: String,
     val currentUserRole: UserRole = UserRole.USER,
     val messages: List<ChatMessage> = emptyList(),
-    val currentInput: String = ""
+    val currentInput: String = "",
+    val isParticipantTyping: Boolean = false,
+    val showAttachmentDrawer: Boolean = false
 )
 
 class MessagingViewModel(
@@ -57,6 +60,10 @@ class MessagingViewModel(
     fun onInputChange(text: String) {
         _uiState.update { it.copy(currentInput = text) }
     }
+    
+    fun toggleAttachmentDrawer() {
+        _uiState.update { it.copy(showAttachmentDrawer = !it.showAttachmentDrawer) }
+    }
 
     fun sendMessage() {
         val text = _uiState.value.currentInput.trim()
@@ -65,11 +72,34 @@ class MessagingViewModel(
         val role = _uiState.value.currentUserRole
         viewModelScope.launch {
             _uiState.update { it.copy(currentInput = "") }
+            
+            // Instantly send my message
             messageRepository.sendMessage(
                 conversationId = conversationId,
                 text = text,
                 senderRole = role
             )
+            
+            // Advanced Polish: Simulate conversational flow from the other side
+            if (role == UserRole.USER) {
+                delay(1200) // Brief pause
+                _uiState.update { it.copy(isParticipantTyping = true) }
+                delay(2800) // Simulate typing time
+                _uiState.update { it.copy(isParticipantTyping = false) }
+                
+                // Auto-reply simulating the specialist
+                val autoReplies = listOf(
+                    "I see. Let's make sure we track that carefully.",
+                    "Thank you for sharing that context.",
+                    "I've updated your clinical notes accordingly.",
+                    "Could you elaborate on that briefly when you have a moment?"
+                )
+                messageRepository.sendMessage(
+                    conversationId = conversationId,
+                    text = autoReplies.random(),
+                    senderRole = UserRole.SPECIALIST
+                )
+            }
         }
     }
 }

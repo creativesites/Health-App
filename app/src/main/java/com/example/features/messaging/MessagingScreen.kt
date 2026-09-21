@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -160,70 +161,164 @@ fun MessagingScreen(
                             }
                         }
                     }
+                    
+                    // Advanced Polish: Typing Indicator
+                    if (uiState.isParticipantTyping) {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                ProviderAvatar(
+                                    initials = if (uiState.currentUserRole == UserRole.USER) "DR" else "PT",
+                                    size = 32,
+                                    backgroundColor = CalmDiscoveryAura,
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                                Surface(
+                                    shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp),
+                                    color = CalmWhite,
+                                    border = BorderStroke(1.dp, CalmHairline),
+                                    modifier = Modifier.width(60.dp).height(38.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = "•••",
+                                            color = CalmSoftSlate,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 18.sp,
+                                            letterSpacing = 2.sp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
-                // Input Bar
+                // Input Bar and Attachment Drawer
                 Surface(
                     color = CalmWhite,
                     shadowElevation = 4.dp,
                     border = BorderStroke(1.dp, CalmHairline),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding()
-                            .padding(horizontal = 16.dp, vertical = 10.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = uiState.currentInput,
-                            onValueChange = { viewModel.onInputChange(it) },
-                            placeholder = {
+                    Column {
+                        // Advanced Polish: Attachment Drawer
+                        androidx.compose.animation.AnimatedVisibility(visible = uiState.showAttachmentDrawer) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(CalmMistSurface)
+                                    .padding(16.dp)
+                            ) {
                                 Text(
-                                    "Type message...",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontFamily = InterFontFamily,
-                                        color = CalmSoftSlate
-                                    )
+                                    text = "Share with practitioner",
+                                    style = MaterialTheme.typography.labelSmall.copy(color = CalmSlate)
                                 )
-                            },
-                            maxLines = 4,
-                            shape = CalmLightShapes.Pill,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = CalmWhite,
-                                unfocusedContainerColor = CalmWhite,
-                                focusedBorderColor = CalmSphereBlue,
-                                unfocusedBorderColor = CalmHairline
-                            ),
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag("input_message_text")
-                        )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                    AttachmentOption(icon = Icons.Outlined.PhotoCamera, label = "Camera")
+                                    AttachmentOption(icon = Icons.Outlined.Image, label = "Gallery")
+                                    AttachmentOption(icon = Icons.Outlined.Description, label = "Document")
+                                    AttachmentOption(icon = Icons.Outlined.MonitorHeart, label = "Vitals")
+                                }
+                            }
+                        }
 
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        IconButton(
-                            onClick = { viewModel.sendMessage() },
-                            enabled = uiState.currentInput.isNotBlank(),
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .size(44.dp)
-                                .testTag("btn_send_message")
-                                .background(
-                                    color = if (uiState.currentInput.isNotBlank()) CalmSphereBlue else CalmMistSurface,
-                                    shape = CircleShape
-                                )
+                                .fillMaxWidth()
+                                .navigationBarsPadding()
+                                .padding(horizontal = 16.dp, vertical = 10.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Send,
-                                contentDescription = "Send",
-                                tint = if (uiState.currentInput.isNotBlank()) CalmWhite else CalmSoftSlate,
-                                modifier = Modifier.size(18.dp)
+                            IconButton(
+                                onClick = { viewModel.toggleAttachmentDrawer() },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(if (uiState.showAttachmentDrawer) CalmDiscoveryAura else Color.Transparent)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Attachments",
+                                    tint = CalmSphereBlue,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            OutlinedTextField(
+                                value = uiState.currentInput,
+                                onValueChange = { viewModel.onInputChange(it) },
+                                placeholder = {
+                                    Text(
+                                        "Type message...",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontFamily = InterFontFamily,
+                                            color = CalmSoftSlate
+                                        )
+                                    )
+                                },
+                                maxLines = 4,
+                                shape = CalmLightShapes.Pill,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = CalmWhite,
+                                    unfocusedContainerColor = CalmWhite,
+                                    focusedBorderColor = CalmSphereBlue,
+                                    unfocusedBorderColor = CalmHairline
+                                ),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .testTag("input_message_text")
                             )
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            IconButton(
+                                onClick = { viewModel.sendMessage() },
+                                enabled = uiState.currentInput.isNotBlank(),
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .testTag("btn_send_message")
+                                    .background(
+                                        color = if (uiState.currentInput.isNotBlank()) CalmSphereBlue else CalmMistSurface,
+                                        shape = CircleShape
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = "Send",
+                                    tint = if (uiState.currentInput.isNotBlank()) CalmWhite else CalmSoftSlate,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AttachmentOption(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Surface(
+            shape = CircleShape,
+            color = CalmWhite,
+            border = BorderStroke(1.dp, CalmHairline),
+            modifier = Modifier.size(48.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(imageVector = icon, contentDescription = label, tint = CalmSphereBlue, modifier = Modifier.size(20.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = label, style = MaterialTheme.typography.labelSmall.copy(fontFamily = InterFontFamily, color = CalmInkNavy, fontSize = 10.sp))
     }
 }

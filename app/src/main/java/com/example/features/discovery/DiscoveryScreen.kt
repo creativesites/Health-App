@@ -699,26 +699,30 @@ fun DiscoveryScreen(
                 }
 
                 if (uiState.practitioners.isEmpty()) {
-                    CalmEmptyState(
-                        title = "No practitioners match your search",
-                        message = "Try clearing filters to view all available verified professionals across Zambia.",
-                        actionText = "Reset Filters",
-                        onAction = { viewModel.clearFilters() },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp)
-                    )
+                    androidx.compose.animation.AnimatedContent(targetState = true, label = "results_transition") { _ ->
+                        CalmEmptyState(
+                            title = "No practitioners match your search",
+                            message = "Try clearing filters to view all available verified professionals across Zambia.",
+                            actionText = "Reset Filters",
+                            onAction = { viewModel.clearFilters() },
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(24.dp)
+                        )
+                    }
                 } else {
-                    LazyColumn(
-                        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 100.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(uiState.practitioners) { practitioner ->
-                            SpecialistCard(
-                                practitioner = practitioner,
-                                onClick = { onSelectProvider(practitioner.id) }
-                            )
+                    androidx.compose.animation.AnimatedContent(targetState = uiState.practitioners, label = "results_transition") { practitioners ->
+                        LazyColumn(
+                            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 100.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(practitioners, key = { it.id }) { practitioner ->
+                                SpecialistCard(
+                                    practitioner = practitioner,
+                                    onClick = { onSelectProvider(practitioner.id) }
+                                )
+                            }
                         }
                     }
                 }

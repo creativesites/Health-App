@@ -337,6 +337,22 @@ data class SpecialistPatientSummary(
     val intakeSummary: String
 )
 
+data class Prescription(
+    val id: String,
+    val medicationName: String,
+    val dosage: String,     // e.g., "10mg" or "1 tablet"
+    val frequency: String,  // e.g., "Once daily at night"
+    val durationDays: Int,  // e.g., 14
+    val instructions: String? = null
+)
+
+data class LabOrder(
+    val id: String,
+    val testName: String,     // e.g., "Thyroid Panel (TSH)"
+    val rationale: String,    // e.g., "Rule out hyperthyroidism"
+    val instructions: String? = null
+)
+
 data class ClinicalEncounter(
     val encounterId: String,
     val appointmentId: String,
@@ -354,5 +370,14 @@ data class ClinicalEncounter(
     val privatePractitionerNotes: String = "", // Kept strictly private to specialist
     val sharedPatientSummary: String = "",      // Shared with patient in their care dashboard
     val isCompleted: Boolean = false,
-    val createdAtEpoch: Long = System.currentTimeMillis()
+    val createdAtEpoch: Long = System.currentTimeMillis(),
+    
+    // Structured SOAP expansion for V1 Showcase
+    val subjectiveText: String = "",
+    val objectiveText: String = "",
+    val assessmentText: String = "",
+    val planText: String = "",
+    val icd10Codes: List<String> = emptyList(),
+    val prescriptions: List<Prescription> = emptyList(),
+    val labOrders: List<LabOrder> = emptyList()
 )
