@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.design.*
-import com.example.core.model.SpecialistAvailabilityDay
+import com.example.core.model.SpecialistAvailabilityRule
 import com.example.core.repository.mock.AppRepositoryLocator
 import com.example.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
@@ -40,14 +40,16 @@ fun SpecialistAvailabilityScreen(
     val session by authRepo.getActiveSession().collectAsState(initial = null)
     val practitionerId = session?.practitionerId ?: "doc_chileshe_01"
 
-    var availabilityDays by remember { mutableStateOf<List<SpecialistAvailabilityDay>>(emptyList()) }
+    var availabilityRules by remember { mutableStateOf<List<SpecialistAvailabilityRule>>(emptyList()) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(practitionerId) {
-        availabilityRepo.getAvailability(practitionerId).collectLatest { list ->
-            availabilityDays = list
+        availabilityRepo.getAvailabilityRules(practitionerId).collectLatest { list ->
+            availabilityRules = list
         }
     }
+
+    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
     AuraBackground(
         aura = AuraType.Payments,
@@ -197,27 +199,35 @@ fun SpecialistAvailabilityScreen(
                     )
                 }
 
-                items(availabilityDays) { day ->
-                    AvailabilityDayCard(
-                        day = day,
+                items(daysOfWeek) { dayName ->
+                    val rule = availabilityRules.firstOrNull { it.dayOfWeek.equals(dayName, ignoreCase = true) }
+                        ?: SpecialistAvailabilityRule(
+                            id = "rule_${practitionerId}_${dayName.lowercase()}",
+                            practitionerId = practitionerId,
+                            dayOfWeek = dayName,
+                            startTime = "09:00",
+                            endTime = "17:00",
+                            slotDurationMinutes = 30,
+                            bufferMinutes = 10,
+                            enabled = false
+                        )
+                        
+                    AvailabilityRuleCard(
+                        rule = rule,
                         onToggleEnabled = { isEnabled ->
-                            val updated = day.copy(isEnabled = isEnabled)
+                            val updated = rule.copy(enabled = isEnabled)
                             coroutineScope.launch {
-                                availabilityRepo.updateDayAvailability(practitionerId, updated)
-                                snackbarHostState.showSnackbar("${day.dayOfWeek} updated")
+                                availabilityRepo.saveRule(updated)
+                                snackbarHostState.showSnackbar("$dayName updated")
                             }
                         },
                         onToggleOnline = { allowsOnline ->
-                            val updated = day.copy(allowsOnline = allowsOnline)
-                            coroutineScope.launch {
-                                availabilityRepo.updateDayAvailability(practitionerId, updated)
-                            }
+                            val updated = rule.copy(allowsOnline = allowsOnline)
+                            coroutineScope.launch { availabilityRepo.saveRule(updated) }
                         },
                         onToggleInPerson = { allowsInPerson ->
-                            val updated = day.copy(allowsInPerson = allowsInPerson)
-                            coroutineScope.launch {
-                                availabilityRepo.updateDayAvailability(practitionerId, updated)
-                            }
+                            val updated = rule.copy(allowsInPerson = allowsInPerson)
+                            coroutineScope.launch { availabilityRepo.saveRule(updated) }
                         }
                     )
                 }
@@ -231,8 +241,8 @@ fun SpecialistAvailabilityScreen(
 }
 
 @Composable
-private fun AvailabilityDayCard(
-    day: SpecialistAvailabilityDay,
+private fun AvailabilityRuleCard(
+    rule: SpecialistAvailabilityRule,
     onToggleEnabled: (Boolean) -> Unit,
     onToggleOnline: (Boolean) -> Unit,
     onToggleInPerson: (Boolean) -> Unit
@@ -240,7 +250,7 @@ private fun AvailabilityDayCard(
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = CalmWhite,
-        border = BorderStroke(1.dp, if (day.isEnabled) CalmSessionsAura else CalmHairline),
+        border = BorderStroke(1.dp, if (rule.enabled) CalmSessionsAura else CalmHairline),
         shadowElevation = 0.5.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -252,36 +262,36 @@ private fun AvailabilityDayCard(
             ) {
                 Column {
                     Text(
-                        text = day.dayOfWeek,
+                        text = rule.dayOfWeek,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontFamily = OutfitFontFamily,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (day.isEnabled) CalmInkNavy else CalmSoftSlate,
+                            color = if (rule.enabled) CalmInkNavy else CalmSoftSlate,
                             fontSize = 17.sp
                         )
                     )
                     Text(
-                        text = if (day.isEnabled) "${day.startTime} - ${day.endTime} (${day.slotDurationMinutes} min sessions)" else "Unavailable / Day off",
+                        text = if (rule.enabled) "${rule.startTime} - ${rule.endTime} (${rule.slotDurationMinutes} min sessions, ${rule.bufferMinutes}m buffer)" else "Unavailable / Day off",
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontFamily = InterFontFamily,
-                            color = if (day.isEnabled) CalmSlate else CalmSoftSlate,
+                            color = if (rule.enabled) CalmSlate else CalmSoftSlate,
                             fontSize = 12.sp
                         )
                     )
                 }
 
                 Switch(
-                    checked = day.isEnabled,
+                    checked = rule.enabled,
                     onCheckedChange = onToggleEnabled,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = CalmWhite,
                         checkedTrackColor = CalmEmerald
                     ),
-                    modifier = Modifier.testTag("switch_day_${day.dayOfWeek.lowercase()}")
+                    modifier = Modifier.testTag("switch_day_${rule.dayOfWeek.lowercase()}")
                 )
             }
 
-            if (day.isEnabled) {
+            if (rule.enabled) {
                 Spacer(modifier = Modifier.height(12.dp))
                 HorizontalDivider(color = CalmHairline)
                 Spacer(modifier = Modifier.height(10.dp))
@@ -294,10 +304,10 @@ private fun AvailabilityDayCard(
                     // Online toggle
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { onToggleOnline(!day.allowsOnline) }
+                        modifier = Modifier.clickable { onToggleOnline(!rule.allowsOnline) }
                     ) {
                         Checkbox(
-                            checked = day.allowsOnline,
+                            checked = rule.allowsOnline,
                             onCheckedChange = onToggleOnline,
                             colors = CheckboxDefaults.colors(checkedColor = CalmSphereBlue)
                         )
@@ -315,10 +325,10 @@ private fun AvailabilityDayCard(
                     // In-Person toggle
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { onToggleInPerson(!day.allowsInPerson) }
+                        modifier = Modifier.clickable { onToggleInPerson(!rule.allowsInPerson) }
                     ) {
                         Checkbox(
-                            checked = day.allowsInPerson,
+                            checked = rule.allowsInPerson,
                             onCheckedChange = onToggleInPerson,
                             colors = CheckboxDefaults.colors(checkedColor = CalmEmerald)
                         )

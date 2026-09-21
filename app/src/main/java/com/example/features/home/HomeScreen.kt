@@ -55,9 +55,10 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     var selectedMood by remember { mutableStateOf<String?>("Grounded") }
     var selectedDayIndex by remember { mutableIntStateOf(3) } // Thursday (Today)
+    var showSwitchRoleDialog by remember { mutableStateOf(false) }
     var showMonthDropdown by remember { mutableStateOf(false) }
     var selectedMonth by remember { mutableStateOf("September") }
-    var showSwitchRoleDialog by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     // Intercept Back Press so Patient Sanctuary NEVER navigates into Specialist Workspace
     BackHandler(enabled = true) {
@@ -126,325 +127,39 @@ fun HomeScreen(
         intensity = 1.15f
     ) {
         Scaffold(
-            topBar = {
-                // Header with floating circular action controls
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
-                ) {
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    // Right: Floating Circular Action Buttons
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        // Discreet crisis shield
-                        Surface(
-                            onClick = onNavigateToSafety,
-                            shape = CircleShape,
-                            color = CalmCrisisCoralSoft,
-                            border = BorderStroke(1.dp, CalmCrisisCoral.copy(alpha = 0.25f)),
-                            modifier = Modifier
-                                .testTag("home_safety_button")
-                                .size(40.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Shield,
-                                    contentDescription = "Crisis support",
-                                    tint = CalmCrisisCoral,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        }
-
-                        // Notification Bell
-                        Surface(
-                            onClick = onNavigateToNotifications,
-                            shape = CircleShape,
-                            color = CalmWhite,
-                            border = BorderStroke(1.dp, CalmHairline),
-                            shadowElevation = 1.dp,
-                            modifier = Modifier
-                                .testTag("home_notifications_button")
-                                .size(40.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                BadgedBox(
-                                    badge = {
-                                        if (uiState.unreadNotificationsCount > 0) {
-                                            Badge(containerColor = CalmSphereBlue) {
-                                                Text("${uiState.unreadNotificationsCount}", color = CalmWhite, fontSize = 10.sp)
-                                            }
-                                        }
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Notifications,
-                                        contentDescription = "Notifications",
-                                        tint = CalmInkNavy,
-                                        modifier = Modifier.size(19.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        // Switch Role / Portal Button
-                        Surface(
-                            onClick = { showSwitchRoleDialog = true },
-                            shape = CircleShape,
-                            color = CalmDiscoveryAura,
-                            border = BorderStroke(1.dp, CalmSphereBlue.copy(alpha = 0.3f)),
-                            modifier = Modifier
-                                .testTag("home_switch_role_button")
-                                .size(40.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Outlined.SwapHoriz,
-                                    contentDescription = "Switch Role",
-                                    tint = CalmSphereBlue,
-                                    modifier = Modifier.size(19.dp)
-                                )
-                            }
-                        }
-
-                        // Patient Avatar
-                        PatientAvatar(
-                            patient = uiState.patient,
-                            size = 40,
-                            onClick = onNavigateToProfile
-                        )
-                    }
-                }
-            },
-            containerColor = Color.Transparent
+            containerColor = Color.Transparent,
+            contentWindowInsets = WindowInsets.systemBars
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
         ) { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(horizontal = 20.dp, vertical = 6.dp)
             ) {
                 val patientFirstName = uiState.patient?.fullName?.substringBefore(" ") ?: "Kondwani"
+                val upcoming = uiState.upcomingAppointment
 
-                // Display Greeting
-                Text(
-                    text = "Welcome, $patientFirstName",
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontFamily = OutfitFontFamily,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 32.sp,
-                        letterSpacing = (-0.7).sp
-                    ),
-                    color = CalmInkNavy
+                HomeHeroHeader(
+                    patient = uiState.patient,
+                    firstName = patientFirstName,
+                    unreadCount = uiState.unreadNotificationsCount,
+                    streakDays = 14,
+                    sessionCount = 2,
+                    nextSessionTitle = upcoming?.let { "${it.dateIso} • ${it.timeSlotLabel} CAT" } ?: "24 Sep • 10:00 CAT",
+                    nextSessionSubtitle = "with ${upcoming?.practitionerName ?: "Dr. Mwansa Chileshe"}",
+                    scrollState = scrollState,
+                    onNavigateToProfile = onNavigateToProfile,
+                    onNavigateToSafety = onNavigateToSafety,
+                    onNavigateToNotifications = onNavigateToNotifications,
+                    onSwitchRoleClick = { showSwitchRoleDialog = true },
+                    onNextSessionClick = onNavigateToAppointments
                 )
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(
-                    text = "Your mental health sanctuary & clinical care circle.",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontFamily = InterFontFamily,
-                        color = CalmSlate,
-                        fontSize = 14.5.sp
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(18.dp))
-
-                // Hero Numerical Metrics & Month Dropdown (Matching Screen 3 in mockup)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column {
-                        Row(verticalAlignment = Alignment.Bottom) {
-                            Text(
-                                text = "14",
-                                style = MaterialTheme.typography.displaySmall.copy(
-                                    fontFamily = OutfitFontFamily,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 34.sp,
-                                    letterSpacing = (-0.5).sp
-                                ),
-                                color = CalmInkNavy
-                            )
-                            Text(
-                                text = " Days",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontFamily = OutfitFontFamily,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 20.sp,
-                                    color = CalmSlate
-                                ),
-                                modifier = Modifier.padding(bottom = 3.dp)
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Text(
-                                text = "2",
-                                style = MaterialTheme.typography.displaySmall.copy(
-                                    fontFamily = OutfitFontFamily,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 34.sp,
-                                    letterSpacing = (-0.5).sp
-                                ),
-                                color = CalmInkNavy
-                            )
-                            Text(
-                                text = " Sessions",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontFamily = OutfitFontFamily,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 20.sp,
-                                    color = CalmSlate
-                                ),
-                                modifier = Modifier.padding(bottom = 3.dp)
-                            )
-                        }
-                    }
-
-                    // Month Selector Dropdown Pill
-                    Box {
-                        Surface(
-                            onClick = { showMonthDropdown = !showMonthDropdown },
-                            shape = CalmLightShapes.Pill,
-                            color = CalmWhite,
-                            border = BorderStroke(1.dp, CalmHairline),
-                            shadowElevation = 0.5.dp
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
-                            ) {
-                                Text(
-                                    text = selectedMonth,
-                                    style = MaterialTheme.typography.labelMedium.copy(
-                                        fontFamily = InterFontFamily,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 13.sp,
-                                        color = CalmInkNavy
-                                    )
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "Select month",
-                                    tint = CalmSlate,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        }
-
-                        DropdownMenu(
-                            expanded = showMonthDropdown,
-                            onDismissRequest = { showMonthDropdown = false }
-                        ) {
-                            listOf("September", "October", "November").forEach { month ->
-                                DropdownMenuItem(
-                                    text = { Text(month) },
-                                    onClick = {
-                                        selectedMonth = month
-                                        showMonthDropdown = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // Trio of Status Pill Chips (Golden Yellow, Matte Dark, Soft Muted)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Golden Honey Pill (Pill 1)
-                    Surface(
-                        shape = CalmLightShapes.Pill,
-                        color = CalmHoneyGold,
-                        modifier = Modifier
-                            .weight(1.1f)
-                            .height(42.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.padding(horizontal = 10.dp)
-                        ) {
-                            Text(
-                                text = "Upcoming: 24 Sep",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontFamily = InterFontFamily,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.5.sp,
-                                    color = CalmInkNavy
-                                ),
-                                maxLines = 1
-                            )
-                        }
-                    }
-
-                    // Matte Charcoal Pill (Pill 2)
-                    Surface(
-                        shape = CalmLightShapes.Pill,
-                        color = CalmDarkMatte,
-                        modifier = Modifier
-                            .weight(1.2f)
-                            .height(42.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.padding(horizontal = 10.dp)
-                        ) {
-                            Text(
-                                text = "Therapy • 10:00 CAT",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontFamily = InterFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 12.5.sp,
-                                    color = CalmWhite
-                                ),
-                                maxLines = 1
-                            )
-                        }
-                    }
-
-                    // Soft Muted Pill (Pill 3)
-                    Surface(
-                        shape = CalmLightShapes.Pill,
-                        color = Color(0xFFE9E4D8),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(42.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.padding(horizontal = 10.dp)
-                        ) {
-                            Text(
-                                text = "Dr. Mwansa",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontFamily = InterFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 12.5.sp,
-                                    color = CalmInkNavy
-                                ),
-                                maxLines = 1
-                            )
-                        }
-                    }
-                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // SHOWSTOPPING MATTE DARK CONTRAST CARD (Inspired by the Medical Report card in Screen 3)
-                val upcoming = uiState.upcomingAppointment
                 Surface(
                     shape = RoundedCornerShape(28.dp),
                     color = CalmDarkMatte,

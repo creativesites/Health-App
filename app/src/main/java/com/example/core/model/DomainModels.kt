@@ -11,10 +11,15 @@ import java.time.LocalDateTime
 enum class SpecialtyCategory(val displayName: String, val iconName: String) {
     MENTAL_HEALTH("Mental Health", "psychology"),
     GENERAL_PRACTICE("General Practice", "medical_services"),
+    CARDIOLOGY("Cardiology", "favorite"),
+    DERMATOLOGY("Dermatology", "spa"),
+    PEDIATRICS("Pediatrics & Child Health", "child_care"),
+    WOMENS_HEALTH("Women's Health", "pregnant_woman"),
     DENTAL("Dental Care", "dentistry"),
     NUTRITION("Nutrition & Diet", "nutrition"),
     PHYSIOTHERAPY("Physiotherapy", "fitness_center"),
     PSYCHIATRY("Psychiatry", "health_and_safety"),
+    LABORATORY("Laboratory Services", "biotech"),
     OCCUPATIONAL_THERAPY("Occupational Therapy", "accessibility"),
     SPEECH_THERAPY("Speech Therapy", "record_voice_over"),
     OTHER("Specialist Care", "local_hospital");
@@ -22,10 +27,15 @@ enum class SpecialtyCategory(val displayName: String, val iconName: String) {
     fun getIconRes(): Int = when (this) {
         MENTAL_HEALTH -> com.example.R.drawable.ic_spec_mental_health
         GENERAL_PRACTICE -> com.example.R.drawable.ic_spec_general_medicine
+        CARDIOLOGY -> com.example.R.drawable.ic_spec_cardiology
+        DERMATOLOGY -> com.example.R.drawable.ic_spec_dermatology
+        PEDIATRICS -> com.example.R.drawable.ic_spec_pediatrics
+        WOMENS_HEALTH -> com.example.R.drawable.ic_spec_womens_health
         DENTAL -> com.example.R.drawable.ic_spec_dental
         NUTRITION -> com.example.R.drawable.ic_spec_nutrition
         PHYSIOTHERAPY -> com.example.R.drawable.ic_spec_physiotherapy
         PSYCHIATRY -> com.example.R.drawable.ic_spec_mental_health
+        LABORATORY -> com.example.R.drawable.ic_spec_laboratory
         OCCUPATIONAL_THERAPY -> com.example.R.drawable.ic_spec_physiotherapy
         SPEECH_THERAPY -> com.example.R.drawable.ic_spec_pediatrics
         OTHER -> com.example.R.drawable.ic_spec_general_medicine
@@ -283,8 +293,33 @@ data class SpecialistAvailabilityDay(
     val startTime: String = "08:30",
     val endTime: String = "16:30",
     val slotDurationMinutes: Int = 45,
+    val bufferMinutes: Int = 10,
     val allowsOnline: Boolean = true,
     val allowsInPerson: Boolean = true
+)
+
+data class SpecialistAvailabilityRule(
+    val id: String,
+    val practitionerId: String,
+    val dayOfWeek: String, // "Monday", "Tuesday", etc.
+    val startTime: String, // "HH:mm"
+    val endTime: String,   // "HH:mm"
+    val slotDurationMinutes: Int = 30,
+    val bufferMinutes: Int = 10,
+    val enabled: Boolean = true,
+    val allowsOnline: Boolean = true,
+    val allowsInPerson: Boolean = true
+)
+
+data class AvailabilityException(
+    val id: String,
+    val practitionerId: String,
+    val dateIso: String, // "YYYY-MM-DD"
+    val startTime: String? = null, // null means whole day is blocked
+    val endTime: String? = null,
+    val type: String = "BLOCKED", // "BLOCKED" or "ADDITIONAL_AVAILABILITY"
+    val reason: String? = null,
+    val enabled: Boolean = true
 )
 
 data class SpecialistPatientSummary(

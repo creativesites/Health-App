@@ -163,6 +163,46 @@ object MockDataContainer {
             supportedConsultationTypes = listOf(ConsultationType.IN_PERSON),
             avatarInitials = "KP",
             imageResId = com.example.R.drawable.doc_kondwani_banda
+        ),
+        Practitioner(
+            id = "doc_tembo_07",
+            fullName = "Dr. Chileshe Tembo",
+            title = "Specialist Pediatrician",
+            credentials = listOf("MBChB (UNZA)", "MMed Pediatrics", "HPCZ Specialist Registry"),
+            primarySpecialty = SpecialtyCategory.PEDIATRICS,
+            isVerified = true,
+            verificationBody = "HPCZ Specialist Medical Board",
+            bio = "Dedicated pediatrician with over 8 years of clinical experience in neonatal care, childhood developmental milestones, immunization coordination, and pediatric disease management in Lusaka.",
+            consultationStyle = "Approachable, play-based pediatric evaluations, highly reassuring for parents.",
+            languages = listOf("English", "Bemba", "Nyanja"),
+            practice = practices[0],
+            location = ZambianLocation(city = "Lusaka", area = "Woodlands"),
+            startingPriceZmw = 400.0,
+            rating = 4.9,
+            reviewCount = 32,
+            supportedConsultationTypes = listOf(ConsultationType.ONLINE, ConsultationType.IN_PERSON),
+            avatarInitials = "CT",
+            imageResId = com.example.R.drawable.doc_chileshe_tembo
+        ),
+        Practitioner(
+            id = "doc_kangwa_08",
+            fullName = "Dr. Mutale Kangwa",
+            title = "Consultant Obstetrician & Gynecologist",
+            credentials = listOf("MBChB (UNZA)", "MMed OBGYN", "HPCZ Specialist Registry"),
+            primarySpecialty = SpecialtyCategory.WOMENS_HEALTH,
+            isVerified = true,
+            verificationBody = "HPCZ Specialist Medical Board",
+            bio = "Expert gynecologist specializing in prenatal care, maternal health guidance, preventative wellness screenings, and menopause management.",
+            consultationStyle = "Warm, thorough clinical assessments with dedicated patient support.",
+            languages = listOf("English", "Bemba", "Nyanja"),
+            practice = practices[0],
+            location = ZambianLocation(city = "Lusaka", area = "Kabulonga"),
+            startingPriceZmw = 500.0,
+            rating = 4.9,
+            reviewCount = 41,
+            supportedConsultationTypes = listOf(ConsultationType.ONLINE, ConsultationType.IN_PERSON),
+            avatarInitials = "MK",
+            imageResId = com.example.R.drawable.doc_mutale_kangwa
         )
     )
 
@@ -577,40 +617,42 @@ class MockPractitionerRepository : PractitionerRepository {
     }
 
     override suspend fun getAvailableTimeSlots(practitionerId: String, dateIso: String): List<TimeSlot> {
-        val existingAppointments = try {
+        val targetDate = try {
+            java.time.LocalDate.parse(dateIso)
+        } catch (_: Exception) {
+            return emptyList()
+        }
+
+        val rulesFlow = try {
+            AppRepositoryLocator.availabilityRepository.getAvailabilityRules(practitionerId)
+        } catch (_: Exception) {
+            null
+        }
+
+        val exceptionsFlow = try {
+            AppRepositoryLocator.availabilityRepository.getAvailabilityExceptions(practitionerId)
+        } catch (_: Exception) {
+            null
+        }
+
+        val appointmentsFlow = try {
             AppRepositoryLocator.appointmentRepository.getAppointments()
         } catch (_: Exception) {
             null
         }
 
-        val bookedLabels = mutableSetOf<String>()
-        // If appointment repository has loaded, find any active appointments on this date
-        try {
-            val apts: List<Appointment> = existingAppointments?.firstOrNull() ?: emptyList()
-            apts.filter { 
-                it.practitionerId == practitionerId && 
-                it.dateIso == dateIso && 
-                it.status != AppointmentStatus.CANCELLED 
-            }.forEach {
-                bookedLabels.add(it.timeSlotLabel)
-            }
-        } catch (_: Exception) {}
+        val rules = rulesFlow?.firstOrNull() ?: emptyList()
+        val exceptions = exceptionsFlow?.firstOrNull() ?: emptyList()
+        val appointments = appointmentsFlow?.firstOrNull() ?: emptyList()
 
-        val baseSlots = listOf(
-            TimeSlot(id = "slot_1", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "09:00 - 09:50", isAvailable = true),
-            TimeSlot(id = "slot_2", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "10:30 - 11:20", isAvailable = true),
-            TimeSlot(id = "slot_3", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "14:00 - 14:50", isAvailable = true),
-            TimeSlot(id = "slot_4", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "15:30 - 16:20", isAvailable = true),
-            TimeSlot(id = "slot_5", practitionerId = practitionerId, dateIso = dateIso, timeLabel = "17:00 - 17:50", isAvailable = false)
+        return com.example.core.domain.SchedulingEngine.generateSlots(
+            practitionerId = practitionerId,
+            targetDate = targetDate,
+            rules = rules,
+            exceptions = exceptions,
+            appointments = appointments,
+            serviceDurationMinutes = 30 // Will dynamically read from selected service in real implementation
         )
-
-        return baseSlots.map { slot ->
-            if (bookedLabels.contains(slot.timeLabel)) {
-                slot.copy(isAvailable = false)
-            } else {
-                slot
-            }
-        }
     }
 
     override fun searchPractitioners(
@@ -1082,6 +1124,37 @@ class MockSpecialistRepository : SpecialistRepository {
 class MockAvailabilityRepository : AvailabilityRepository {
     private val availabilityMap = mutableMapOf<String, MutableStateFlow<List<SpecialistAvailabilityDay>>>()
 
+    // Temporary lists to satisfy new Scheduling Engine flow without a real database yet
+    private val mockRulesFlow = MutableStateFlow(
+        listOf(
+            SpecialistAvailabilityRule(
+                id = "rule_mock_mon_1",
+                practitionerId = "doc_chileshe_01",
+                dayOfWeek = "Monday",
+                startTime = "09:00",
+                endTime = "16:00",
+                slotDurationMinutes = 30,
+                bufferMinutes = 10,
+                enabled = true,
+                allowsOnline = true,
+                allowsInPerson = true
+            ),
+            SpecialistAvailabilityRule(
+                id = "rule_mock_tue_1",
+                practitionerId = "doc_chileshe_01",
+                dayOfWeek = "Tuesday",
+                startTime = "09:00",
+                endTime = "16:00",
+                slotDurationMinutes = 30,
+                bufferMinutes = 10,
+                enabled = true,
+                allowsOnline = true,
+                allowsInPerson = true
+            )
+        )
+    )
+    private val mockExceptionsFlow = MutableStateFlow<List<AvailabilityException>>(emptyList())
+
     private fun getFlowFor(practitionerId: String): MutableStateFlow<List<SpecialistAvailabilityDay>> {
         return availabilityMap.getOrPut(practitionerId) {
             MutableStateFlow(MockDataContainer.defaultAvailability)
@@ -1103,6 +1176,56 @@ class MockAvailabilityRepository : AvailabilityRepository {
             current[index] = day
             flow.value = current
         }
+    }
+
+    override fun getAvailabilityRules(practitionerId: String): Flow<List<SpecialistAvailabilityRule>> {
+        return mockRulesFlow.map { rules ->
+            val practitionerRules = rules.filter { it.practitionerId == practitionerId }
+            if (practitionerRules.isEmpty()) {
+                listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday").map { day ->
+                    SpecialistAvailabilityRule(
+                        id = "rule_${practitionerId}_${day.take(3).lowercase()}",
+                        practitionerId = practitionerId,
+                        dayOfWeek = day,
+                        startTime = "09:00",
+                        endTime = "16:00",
+                        slotDurationMinutes = 50,
+                        bufferMinutes = 10,
+                        enabled = true,
+                        allowsOnline = true,
+                        allowsInPerson = true
+                    )
+                }
+            } else {
+                practitionerRules
+            }
+        }
+    }
+
+    override fun getAvailabilityExceptions(practitionerId: String): Flow<List<AvailabilityException>> {
+        return mockExceptionsFlow
+    }
+
+    override suspend fun saveRule(rule: SpecialistAvailabilityRule) {
+        val current = mockRulesFlow.value.toMutableList()
+        val index = current.indexOfFirst { it.id == rule.id }
+        if (index != -1) {
+            current[index] = rule
+        } else {
+            current.add(rule)
+        }
+        mockRulesFlow.value = current
+    }
+
+    override suspend fun saveException(exception: AvailabilityException) {
+        val current = mockExceptionsFlow.value.toMutableList()
+        val index = current.indexOfFirst { it.id == exception.id }
+        if (index != -1) {
+            current[index] = exception
+        } else {
+            current.add(exception)
+        }
+        mockExceptionsFlow.value = current
     }
 }
 

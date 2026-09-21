@@ -109,8 +109,14 @@ interface SpecialistRepository {
 }
 
 interface AvailabilityRepository {
-    fun getAvailability(practitionerId: String): Flow<List<SpecialistAvailabilityDay>>
+    fun getAvailability(practitionerId: String): Flow<List<SpecialistAvailabilityDay>> // Legacy V1 signature
     suspend fun updateDayAvailability(practitionerId: String, day: SpecialistAvailabilityDay)
+    
+    // New Scheduling Engine Signatures
+    fun getAvailabilityRules(practitionerId: String): Flow<List<SpecialistAvailabilityRule>>
+    fun getAvailabilityExceptions(practitionerId: String): Flow<List<AvailabilityException>>
+    suspend fun saveRule(rule: SpecialistAvailabilityRule)
+    suspend fun saveException(exception: AvailabilityException)
 }
 
 interface EncounterRepository {

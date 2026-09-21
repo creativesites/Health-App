@@ -30,7 +30,8 @@ import kotlinx.coroutines.launch
 fun SpecialistConsultationScreen(
     appointmentId: String,
     onEndConsultation: (appointmentId: String) -> Unit,
-    onOpenEncounterNotes: (appointmentId: String) -> Unit
+    onOpenEncounterNotes: (appointmentId: String) -> Unit,
+    onOpenChat: (conversationId: String, participantName: String) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val appointmentRepo = AppRepositoryLocator.appointmentRepository
@@ -286,6 +287,26 @@ fun SpecialistConsultationScreen(
                                 imageVector = Icons.Outlined.EditNote,
                                 contentDescription = "Open Notes",
                                 tint = CalmSphereBlue
+                            )
+                        }
+
+                        // In-call Chat
+                        IconButton(
+                            onClick = {
+                                onOpenChat(
+                                    "conv_${appointment?.patientId ?: "pat_demo_me"}",
+                                    appointment?.patientName ?: "Kondwani Tembo"
+                                )
+                            },
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(CalmWhite.copy(alpha = 0.1f))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.ChatBubbleOutline,
+                                contentDescription = "Open Chat",
+                                tint = CalmWhite,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 

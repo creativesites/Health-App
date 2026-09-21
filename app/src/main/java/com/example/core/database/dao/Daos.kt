@@ -110,3 +110,33 @@ interface AppointmentDao {
     suspend fun deleteById(id: String): Int
 }
 
+@Dao
+interface SpecialistAvailabilityRuleDao {
+    @Query("SELECT * FROM specialist_availability_rules WHERE practitionerId = :practitionerId")
+    fun getRulesForPractitioner(practitionerId: String): Flow<List<com.example.core.database.entity.SpecialistAvailabilityRuleEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(rule: com.example.core.database.entity.SpecialistAvailabilityRuleEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(rules: List<com.example.core.database.entity.SpecialistAvailabilityRuleEntity>)
+
+    @Query("DELETE FROM specialist_availability_rules WHERE id = :id")
+    suspend fun deleteById(id: String): Int
+}
+
+@Dao
+interface AvailabilityExceptionDao {
+    @Query("SELECT * FROM availability_exceptions WHERE practitionerId = :practitionerId")
+    fun getExceptionsForPractitioner(practitionerId: String): Flow<List<com.example.core.database.entity.AvailabilityExceptionEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(exception: com.example.core.database.entity.AvailabilityExceptionEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(exceptions: List<com.example.core.database.entity.AvailabilityExceptionEntity>)
+
+    @Query("DELETE FROM availability_exceptions WHERE id = :id")
+    suspend fun deleteById(id: String): Int
+}
+

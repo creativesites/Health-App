@@ -453,6 +453,11 @@ fun HealthcareApp() {
                     },
                     onOpenMessages = { patientId, patientName ->
                         navController.navigate(Screen.Messaging.createRoute("conv_$patientId", patientName))
+                    },
+                    onSwitchRole = {
+                        navController.navigate(Screen.AuthSelection.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 )
             }
@@ -517,6 +522,9 @@ fun HealthcareApp() {
                     },
                     onOpenEncounterNotes = { aptId ->
                         navController.navigate(Screen.SpecialistEncounterNotes.createRoute(aptId))
+                    },
+                    onOpenChat = { convId, name ->
+                        navController.navigate(Screen.Messaging.createRoute(convId, name))
                     }
                 )
             }

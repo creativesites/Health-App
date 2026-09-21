@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
@@ -41,15 +42,6 @@ fun BookingScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val practitioner = uiState.practitioner
-
-    val calendarDates = listOf(
-        Triple("Mon", "21", "2026-09-21"),
-        Triple("Tue", "22", "2026-09-22"),
-        Triple("Wed", "23", "2026-09-23"),
-        Triple("Thu", "24", "2026-09-24"),
-        Triple("Fri", "25", "2026-09-25"),
-        Triple("Sat", "26", "2026-09-26")
-    )
 
     // Confirmation Modal Dialog
     if (uiState.showConfirmationDialog && practitioner != null && uiState.selectedService != null && uiState.selectedTimeSlot != null) {
@@ -418,30 +410,117 @@ fun BookingScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Section 4: Calendar Date Selection
-                Text(
-                    text = "4. Select Date",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = OutfitFontFamily,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 18.sp
-                    ),
-                    color = CalmInkNavy
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(calendarDates) { (dayName, dayNum, iso) ->
-                        val isSelected = uiState.selectedDateIso == iso
-                        CalmCalendarTile(
-                            dayName = dayName,
-                            dayNumber = dayNum,
-                            isSelected = isSelected,
-                            isAvailable = true,
-                            onClick = { viewModel.onSelectDate(iso) }
+                    Text(
+                        text = "4. Select Date",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = OutfitFontFamily,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 18.sp
+                        ),
+                        color = CalmInkNavy
+                    )
+                    
+                    // Month Navigation Controls
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { viewModel.onMonthChange(uiState.visibleMonth.minusMonths(1)) },
+                            enabled = !uiState.visibleMonth.isBefore(java.time.YearMonth.now())
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Month", tint = if (!uiState.visibleMonth.isBefore(java.time.YearMonth.now())) CalmInkNavy else CalmHairline)
+                        }
+                        Text(
+                            text = "${uiState.visibleMonth.month.getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.getDefault())} ${uiState.visibleMonth.year}",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontFamily = InterFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                color = CalmInkNavy
+                            ),
+                            modifier = Modifier.widthIn(min = 100.dp),
+                            textAlign = TextAlign.Center
                         )
+                        IconButton(
+                            onClick = { viewModel.onMonthChange(uiState.visibleMonth.plusMonths(1)) }
+                        ) {
+                            Icon(Icons.Filled.ArrowForward, contentDescription = "Next Month", tint = CalmInkNavy)
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Calendar Grid
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    // Days of week header
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                        listOf("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN").forEach { day ->
+                            Text(
+                                text = day,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontFamily = InterFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 10.sp,
+                                    color = CalmSlate
+                                ),
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    val firstDayOfWeek = uiState.visibleMonth.atDay(1).dayOfWeek.value // 1 (Mon) to 7 (Sun)
+                    val daysInMonth = uiState.visibleMonth.lengthOfMonth()
+                    val totalCells = firstDayOfWeek - 1 + daysInMonth
+                    val rows = Math.ceil(totalCells / 7.0).toInt()
+                    
+                    var currentDay = 1
+                    
+                    for (row in 0 until rows) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            for (col in 1..7) {
+                                if (row == 0 && col < firstDayOfWeek) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                } else if (currentDay <= daysInMonth) {
+                                    val date = uiState.visibleMonth.atDay(currentDay)
+                                    val isPast = date.isBefore(java.time.LocalDate.now())
+                                    val isAvailable = uiState.availableDates.contains(date.toString())
+                                    val isSelected = uiState.selectedDateIso == date.toString()
+                                    
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .aspectRatio(1f)
+                                            .padding(4.dp)
+                                            .clip(CircleShape)
+                                            .background(if (isSelected) CalmSphereBlue else if (isAvailable && !isPast) CalmDiscoveryAura.copy(alpha = 0.3f) else Color.Transparent)
+                                            .clickable(enabled = isAvailable && !isPast) {
+                                                viewModel.onSelectDate(date.toString())
+                                            }
+                                    ) {
+                                        Text(
+                                            text = currentDay.toString(),
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontFamily = InterFontFamily,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                                color = if (isSelected) CalmWhite else if (isAvailable && !isPast) CalmInkNavy else CalmHairline,
+                                                fontSize = 15.sp
+                                            )
+                                        )
+                                    }
+                                    currentDay++
+                                } else {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -459,11 +538,24 @@ fun BookingScreen(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Morning & Afternoon slots
-                val morningSlots = uiState.availableTimeSlots.filter { it.timeLabel.contains("AM") }
-                val afternoonSlots = uiState.availableTimeSlots.filter { it.timeLabel.contains("PM") }
+                // Time slots logic using 24h split
+                val morningSlots = uiState.availableTimeSlots.filter { 
+                    try { 
+                        val startHour = it.timeLabel.substringBefore(":").toInt(); startHour < 12 
+                    } catch(e: Exception) { false }
+                }
+                val afternoonSlots = uiState.availableTimeSlots.filter { 
+                    try { 
+                        val startHour = it.timeLabel.substringBefore(":").toInt(); startHour >= 12 
+                    } catch(e: Exception) { false }
+                }
 
-                if (morningSlots.isEmpty() && afternoonSlots.isEmpty()) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(20.dp),
+                        color = CalmSphereBlue
+                    )
+                } else if (uiState.availableTimeSlots.isEmpty()) {
                     Surface(
                         shape = CalmLightShapes.Standard,
                         color = CalmWhite.copy(alpha = 0.85f),
@@ -471,7 +563,7 @@ fun BookingScreen(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                     ) {
                         Text(
-                            text = "No open slots remaining for this date. Please choose another day above.",
+                            text = "No open slots remaining for this date. Please choose another available date above.",
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontFamily = InterFontFamily,
                                 color = CalmSlate,
@@ -480,54 +572,73 @@ fun BookingScreen(
                             modifier = Modifier.padding(16.dp)
                         )
                     }
-                }
+                } else {
+                    if (morningSlots.isNotEmpty()) {
+                        Text(
+                            text = "Morning",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontFamily = InterFontFamily,
+                                color = CalmSlate
+                            ),
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(morningSlots) { slot ->
+                                CalmTimeSlotPill(
+                                    timeLabel = slot.timeLabel,
+                                    isSelected = uiState.selectedTimeSlot?.id == slot.id,
+                                    isAvailable = slot.isAvailable,
+                                    onClick = { viewModel.onSelectTimeSlot(slot) },
+                                    modifier = Modifier.width(102.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(14.dp))
+                    }
 
-                if (morningSlots.isNotEmpty()) {
-                    Text(
-                        text = "Morning",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontFamily = InterFontFamily,
-                            color = CalmSlate
-                        ),
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        items(morningSlots) { slot ->
-                            CalmTimeSlotPill(
-                                timeLabel = slot.timeLabel,
-                                isSelected = uiState.selectedTimeSlot?.id == slot.id,
-                                isAvailable = slot.isAvailable,
-                                onClick = { viewModel.onSelectTimeSlot(slot) },
-                                modifier = Modifier.width(102.dp)
-                            )
+                    if (afternoonSlots.isNotEmpty()) {
+                        Text(
+                            text = "Afternoon",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontFamily = InterFontFamily,
+                                color = CalmSlate
+                            ),
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(afternoonSlots) { slot ->
+                                CalmTimeSlotPill(
+                                    timeLabel = slot.timeLabel,
+                                    isSelected = uiState.selectedTimeSlot?.id == slot.id,
+                                    isAvailable = slot.isAvailable,
+                                    onClick = { viewModel.onSelectTimeSlot(slot) },
+                                    modifier = Modifier.width(102.dp)
+                                )
+                            }
                         }
                     }
-                    Spacer(modifier = Modifier.height(14.dp))
                 }
-
-                if (afternoonSlots.isNotEmpty()) {
-                    Text(
-                        text = "Afternoon",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontFamily = InterFontFamily,
-                            color = CalmSlate
-                        ),
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                
+                if (uiState.conflictState) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Surface(
+                        shape = CalmLightShapes.Standard,
+                        color = CalmCrisisCoralSoft,
+                        border = BorderStroke(1.dp, CalmCrisisCoral.copy(alpha = 0.4f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(afternoonSlots) { slot ->
-                            CalmTimeSlotPill(
-                                timeLabel = slot.timeLabel,
-                                isSelected = uiState.selectedTimeSlot?.id == slot.id,
-                                isAvailable = slot.isAvailable,
-                                onClick = { viewModel.onSelectTimeSlot(slot) },
-                                modifier = Modifier.width(102.dp)
+                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Warning, contentDescription = null, tint = CalmCrisisCoral)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = uiState.errorMessage ?: "The selected time slot is no longer available. Please choose another.",
+                                style = MaterialTheme.typography.bodyMedium.copy(color = CalmInkNavy)
                             )
                         }
                     }

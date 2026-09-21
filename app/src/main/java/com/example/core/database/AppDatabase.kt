@@ -5,10 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.core.database.dao.CareGoalDao
-import com.example.core.database.dao.JournalEntryDao
-import com.example.core.database.dao.MoodCheckInDao
-import com.example.core.database.dao.PatientDao
+import com.example.core.database.dao.*
 import com.example.core.database.entity.CareGoalEntity
 import com.example.core.database.entity.JournalEntryEntity
 import com.example.core.database.entity.MoodCheckInEntity
@@ -23,9 +20,11 @@ import kotlinx.coroutines.launch
         CareGoalEntity::class,
         MoodCheckInEntity::class,
         JournalEntryEntity::class,
-        com.example.core.database.entity.AppointmentEntity::class
+        com.example.core.database.entity.AppointmentEntity::class,
+        com.example.core.database.entity.SpecialistAvailabilityRuleEntity::class,
+        com.example.core.database.entity.AvailabilityExceptionEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -33,7 +32,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun careGoalDao(): CareGoalDao
     abstract fun moodCheckInDao(): MoodCheckInDao
     abstract fun journalEntryDao(): JournalEntryDao
-    abstract fun appointmentDao(): com.example.core.database.dao.AppointmentDao
+    abstract fun appointmentDao(): AppointmentDao
+    abstract fun specialistAvailabilityRuleDao(): SpecialistAvailabilityRuleDao
+    abstract fun availabilityExceptionDao(): AvailabilityExceptionDao
 
     private class DatabaseCallback : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -159,6 +160,109 @@ abstract class AppDatabase : RoomDatabase() {
                 com.example.core.database.entity.AppointmentEntity.fromDomain(it)
             }
             database.appointmentDao().insertAll(initialAppointments)
+
+            // Prepopulate Availability Rules for Practitioners
+            val ruleDao = database.specialistAvailabilityRuleDao()
+            val rules = listOf(
+                // Mutale Chileshe (doc_chileshe_01)
+                com.example.core.database.entity.SpecialistAvailabilityRuleEntity(
+                    id = "rule_chileshe_mon_1",
+                    practitionerId = "doc_chileshe_01",
+                    dayOfWeek = "Monday",
+                    startTime = "09:00",
+                    endTime = "12:00",
+                    slotDurationMinutes = 30,
+                    bufferMinutes = 10,
+                    enabled = true,
+                    allowsOnline = true,
+                    allowsInPerson = true
+                ),
+                com.example.core.database.entity.SpecialistAvailabilityRuleEntity(
+                    id = "rule_chileshe_mon_2",
+                    practitionerId = "doc_chileshe_01",
+                    dayOfWeek = "Monday",
+                    startTime = "14:00",
+                    endTime = "17:00",
+                    slotDurationMinutes = 30,
+                    bufferMinutes = 10,
+                    enabled = true,
+                    allowsOnline = true,
+                    allowsInPerson = true
+                ),
+                com.example.core.database.entity.SpecialistAvailabilityRuleEntity(
+                    id = "rule_chileshe_wed",
+                    practitionerId = "doc_chileshe_01",
+                    dayOfWeek = "Wednesday",
+                    startTime = "09:00",
+                    endTime = "15:00",
+                    slotDurationMinutes = 30,
+                    bufferMinutes = 10,
+                    enabled = true,
+                    allowsOnline = true,
+                    allowsInPerson = true
+                ),
+                com.example.core.database.entity.SpecialistAvailabilityRuleEntity(
+                    id = "rule_chileshe_fri",
+                    practitionerId = "doc_chileshe_01",
+                    dayOfWeek = "Friday",
+                    startTime = "09:00",
+                    endTime = "16:00",
+                    slotDurationMinutes = 30,
+                    bufferMinutes = 10,
+                    enabled = true,
+                    allowsOnline = true,
+                    allowsInPerson = true
+                ),
+
+                // Dr. Thandiwe Mwansa (doc_mwansa_02)
+                com.example.core.database.entity.SpecialistAvailabilityRuleEntity(
+                    id = "rule_mwansa_tue",
+                    practitionerId = "doc_mwansa_02",
+                    dayOfWeek = "Tuesday",
+                    startTime = "14:00",
+                    endTime = "18:00",
+                    slotDurationMinutes = 45,
+                    bufferMinutes = 15,
+                    enabled = true,
+                    allowsOnline = true,
+                    allowsInPerson = true
+                ),
+                com.example.core.database.entity.SpecialistAvailabilityRuleEntity(
+                    id = "rule_mwansa_thu",
+                    practitionerId = "doc_mwansa_02",
+                    dayOfWeek = "Thursday",
+                    startTime = "14:00",
+                    endTime = "18:00",
+                    slotDurationMinutes = 45,
+                    bufferMinutes = 15,
+                    enabled = true,
+                    allowsOnline = true,
+                    allowsInPerson = true
+                )
+            )
+            ruleDao.insertAll(rules)
+
+            // Prepopulate some exceptions relative to today
+            val exceptionDao = database.availabilityExceptionDao()
+            val today = java.time.LocalDate.now()
+            
+            // Let's block out next Monday for Chileshe (e.g. "Clinical Seminar Blocked Time")
+            val nextMonday = today.plusDays((8 - today.dayOfWeek.value).toLong() % 7)
+            val blockedMonDate = if (nextMonday == today) today.plusDays(7) else nextMonday
+            
+            val exceptions = listOf(
+                com.example.core.database.entity.AvailabilityExceptionEntity(
+                    id = "exc_chileshe_blocked_1",
+                    practitionerId = "doc_chileshe_01",
+                    dateIso = blockedMonDate.toString(),
+                    startTime = null,
+                    endTime = null,
+                    type = "BLOCKED",
+                    reason = "Clinical Seminar Blocked Time",
+                    enabled = true
+                )
+            )
+            exceptionDao.insertAll(exceptions)
         }
     }
 }

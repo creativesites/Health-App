@@ -239,3 +239,81 @@ data class AppointmentEntity(
     }
 }
 
+@Entity(tableName = "specialist_availability_rules")
+data class SpecialistAvailabilityRuleEntity(
+    @PrimaryKey val id: String,
+    val practitionerId: String,
+    val dayOfWeek: String,
+    val startTime: String,
+    val endTime: String,
+    val slotDurationMinutes: Int,
+    val bufferMinutes: Int,
+    val enabled: Boolean,
+    val allowsOnline: Boolean,
+    val allowsInPerson: Boolean
+) {
+    fun toDomain(): com.example.core.model.SpecialistAvailabilityRule = com.example.core.model.SpecialistAvailabilityRule(
+        id = id,
+        practitionerId = practitionerId,
+        dayOfWeek = dayOfWeek,
+        startTime = startTime,
+        endTime = endTime,
+        slotDurationMinutes = slotDurationMinutes,
+        bufferMinutes = bufferMinutes,
+        enabled = enabled,
+        allowsOnline = allowsOnline,
+        allowsInPerson = allowsInPerson
+    )
+
+    companion object {
+        fun fromDomain(rule: com.example.core.model.SpecialistAvailabilityRule): SpecialistAvailabilityRuleEntity = SpecialistAvailabilityRuleEntity(
+            id = rule.id,
+            practitionerId = rule.practitionerId,
+            dayOfWeek = rule.dayOfWeek,
+            startTime = rule.startTime,
+            endTime = rule.endTime,
+            slotDurationMinutes = rule.slotDurationMinutes,
+            bufferMinutes = rule.bufferMinutes,
+            enabled = rule.enabled,
+            allowsOnline = rule.allowsOnline,
+            allowsInPerson = rule.allowsInPerson
+        )
+    }
+}
+
+@Entity(tableName = "availability_exceptions")
+data class AvailabilityExceptionEntity(
+    @PrimaryKey val id: String,
+    val practitionerId: String,
+    val dateIso: String,
+    val startTime: String?,
+    val endTime: String?,
+    val type: String,
+    val reason: String?,
+    val enabled: Boolean
+) {
+    fun toDomain(): com.example.core.model.AvailabilityException = com.example.core.model.AvailabilityException(
+        id = id,
+        practitionerId = practitionerId,
+        dateIso = dateIso,
+        startTime = startTime,
+        endTime = endTime,
+        type = type,
+        reason = reason,
+        enabled = enabled
+    )
+
+    companion object {
+        fun fromDomain(exception: com.example.core.model.AvailabilityException): AvailabilityExceptionEntity = AvailabilityExceptionEntity(
+            id = exception.id,
+            practitionerId = exception.practitionerId,
+            dateIso = exception.dateIso,
+            startTime = exception.startTime,
+            endTime = exception.endTime,
+            type = exception.type,
+            reason = exception.reason,
+            enabled = exception.enabled
+        )
+    }
+}
+
